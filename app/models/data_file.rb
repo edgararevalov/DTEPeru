@@ -73,8 +73,10 @@ class DataFile < ActiveRecord::Base
     xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + #Monto Total
     ""+colum + # /codigos de otros conceptos tributarios recomendados
     ""+colum + # Total de Valor Venta Neto
-    xml_doc.xpath('//cac:AccountingCustomerParty/cbc:CustomerAssignedAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum +  # numero de documento de identidad del adquirente o usuario
-    xml_doc.xpath('//cac:AccountingCustomerParty/cbc:AdditionalAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum +  # Tipo de documento de identidad del adquirente o usuario
+     # numero de documento de identidad del adquirente o usuario  
+    xml_doc.xpath('//cac:AccountingCustomerParty/cbc:CustomerAssignedAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum + 
+    # Tipo de documento de identidad del adquirente o usuario
+    xml_doc.xpath('//cac:AccountingCustomerParty/cbc:AdditionalAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum +  
     xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode' , 'cac' => cac, 'cbc' => cbc).text + colum +  # Codigo del pais emisor
     xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName' , 'cac' => cac, 'cbc' => cbc).text + colum +   # Urbanización Emisor
 
@@ -185,14 +187,18 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
         (element.xpath('cbc:PayableAmount', 'cbc' => cbc).text).to_s + colum + # Total Valor Venta Neto
         (element.xpath('cbc:TotalAmount', 'cbc' => cbc).text).to_s + colum + #Monto Total del documento incluida la percepcion
         #Base Imponible percepcion o Valor Referencial del sercicio de transporte de bienes realizado por via terrestre
-        (element.xpath('cbc:ReferenceAmount', 'cbc' => cbc).text).to_s  
-        strtrama = strtrama + "<br>"
-        end
+        (element.xpath('cbc:ReferenceAmount', 'cbc' => cbc).text).to_s  + colum +
+        #Porcentaje de Detraccion 
+       (element.xpath('cbc:Percent', 'cbc' => cbc).text).to_s
+       
+         strtrama = strtrama + "<br>"
+    end
 
    #NOTAS DEL DOCUMENTO DN
         xml_doc.xpath("//sac:AdditionalProperty",'sac' => sac ).each do |element|
             strtrama = strtrama + "<b>DN|</b>" + element.xpath('cbc:ID','cbc' => cbc).text + "|" + # C√≥digos de LA LEYENDA
-            element.xpath('cbc:Value', 'cbc' => cbc).text + "|"  # Glosa de la Leyenda
+            element.xpath('cbc:Value', 'cbc' => cbc).text + "|" +  # Glosa de la Leyenda
+            element.xpath('cbc:Name', 'cbc' => cbc).text  #Descripcion del tramo o viaje
             strtrama = strtrama + "<br>"
         end
 
