@@ -8,8 +8,8 @@ class UploadController < ApplicationController
   def uploadFile
        df = DataFile.new(strtrama: "ok")
        df.save(params[:upload])
-       
-      render html: df.tramaoriginal(df.rutafile(),01).html_safe
+      #render plain: params[:tipodte] 
+      render html: df.tramaoriginal(df.rutafile(),params[:tipodte]).html_safe
       #render plain: df.retornartrama("edgar")
       #render plain: "hola"
   end    

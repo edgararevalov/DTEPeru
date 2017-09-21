@@ -37,18 +37,20 @@ class DataFile < ActiveRecord::Base
     sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
     xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     colum = "|"
-    if tipocpe == 1
+    if tipocpe == "01"
        strcpe = "//cac:InvoiceLine"
+       strquantity = "cbc:InvoicedQuantity"
     else 
        strcpe = "//cac:CreditNoteLine"
+       strquantity = "cbc:CreditedQuantity"
     end
  
    #Encabezado
-    strtrama =  "<b>EN|</b>" + xml_doc.xpath('//cbc:InvoiceTypeCode', 'cbc' => cbc).text + "|" +  #Tipo de Documento
+    strtrama =  "<b>EN|</b>" + tipocpe.to_s + "|" +  #Tipo de Documento
     xml_doc.xpath('//cbc:ID' , 'cbc' => cbc)[2].text + "|" +   #Serie y Correlativo
-    xml_doc.xpath('//sac:DiscrepancyResponse/cbc:ResponseCode', 'sac' => sac, 'cbc' => cbc).text + colum +  #Tipo de Nota de Credito Debito
-    xml_doc.xpath('//sac:DiscrepancyResponse/cbc:ReferenceID', 'sac' => sac, 'cbc' => cbc).text + colum +  #Factura que Referencia a la NC
-    xml_doc.xpath('//sac:DiscrepancyResponse/cbc:Description', 'sac' => sac, 'cbc' => cbc).text + colum  + # Sustento
+    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:ResponseCode', 'cac' => cac, 'cbc' => cbc).text + colum +  #Tipo de Nota de Credito Debito
+    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:ReferenceID', 'cac' => cac, 'cbc' => cbc).text + colum +  #Factura que Referencia a la NC
+    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:Description', 'cac' => cac, 'cbc' => cbc).text + colum  + # Sustento
     xml_doc.xpath('//cbc:IssueDate' , 'cbc' => cbc).text + colum +  #Fecha de Emision
     xml_doc.xpath('//cbc:DocumentCurrencyCode' , 'cbc' => cbc).text + colum + # Tipo de Moneda
     xml_doc.xpath('//cbc:CustomerAssignedAccountID' , 'cbc' => cbc).text + colum + # RUC Emisor
@@ -195,13 +197,13 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
         end
 
    #DETALLES DEL ITEM DE
-        xml_doc.xpath("//cac:InvoiceLine", 'cac' => cac  ).each do |element|
+        xml_doc.xpath(strcpe, 'cac' => cac  ).each do |element|
             strtrama = strtrama + "<b>DE|</b>" +
             element.xpath('cbc:ID','cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
             # Precio de Venta Unitario x item
             element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount', 'cac' => cac,'cbc' => cbc).text + "|" + 
-            element.xpath('cbc:InvoicedQuantity[@unitCode] ','cbc' => cbc).attribute('unitCode') + "|"  + # Unidad de medida
-            element.xpath('cbc:InvoicedQuantity','cbc' => cbc).text + "|" + # Cantidad de Unidades Vendidas
+            element.xpath( strquantity +'[@unitCode]','cbc' => cbc).attribute('unitCode') + "|"  + # Unidad de medida
+            element.xpath(strquantity,'cbc' => cbc).text + "|" + # Cantidad de Unidades Vendidas
             element.xpath('cbc:LineExtensionAmount','cbc' => cbc).text + "|" + # Valor de venta por ITEM
             element.xpath('cac:Item/cac:SellersItemIdentification/cbc:ID', 'cac' => cac,'cbc' => cbc).text + "|" + # Codigo del Item
             # Tipo de precio de venta
@@ -212,14 +214,14 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
         end
         
      #DESCRIPCION DEL ITEM DEDI DEDI
-        xml_doc.xpath("//cac:InvoiceLine/cac:Item/cbc:Description", 'cac' => cac,'cbc' => cbc  ).each do |element|
+        xml_doc.xpath(strcpe +"/cac:Item/cbc:Description", 'cac' => cac,'cbc' => cbc  ).each do |element|
             strtrama = strtrama + "<b>DEDI|</b>" +
             element.text + "|"  # Correlativo de la Linea o Detalle
             strtrama = strtrama + "<br>"
         end
         
      #DESCUENTOS Y RECARGOS DEL ITEM DEDR
-        xml_doc.xpath("//cac:InvoiceLine/cac:AllowanceCharge", 'cac' => cac,'cbc' => cbc  ).each do |element|
+        xml_doc.xpath(strcpe + "/cac:AllowanceCharge", 'cac' => cac,'cbc' => cbc  ).each do |element|
             strtrama = strtrama + "<b>DEDR|</b>" +
             element.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
             element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|"  # Correlativo de la Linea o Detalle

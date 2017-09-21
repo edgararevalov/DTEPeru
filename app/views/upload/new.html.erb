@@ -1,5 +1,7 @@
 <h1>File Upload<h1>
 <%= form_for(:upload, :url => {:action => 'uploadFile'}, :html => {:multipart => true}) do |f| %>
+<p><label>Tipo DTE</label>
+<%=select_tag 'tipodte', options_for_select([["Factura", "01"], ["Boleta", "03"],["NC" , "07"],["ND" , "08"]], selected: "Factura") %>
 <p><label for="upload_file">Select File</label>
 <%= file_field 'upload', 'datafile' %></p>
 <%= f.submit"Upload"%>
