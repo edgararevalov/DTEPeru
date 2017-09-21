@@ -170,6 +170,19 @@ xml_doc.xpath('//cbc:ExpiryDate' , 'cac' => cac, 'cbc' => cbc).text + colum +
 #Modalidad de Traslado del remitente
 xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/cbc:TransportModeCode' ,'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum 
 
+#DETALLE DE OTROS CONCEPTOS DOC
+  strtrama = strtrama + "<br>"
+  xml_doc.xpath("//sac:AdditionalMonetaryTotal",'sac' => sac ).each do |element|
+        # C√≥digos de otros conceptos tributarios o comerciales recomendados    
+        strtrama = strtrama +  "<b>DOC|</b>" + (element.xpath('cbc:ID','cbc' => cbc).text).to_s + colum + 
+        (element.xpath('cbc:PayableAmount', 'cbc' => cbc).text).to_s + colum + # Total Valor Venta Neto
+        (element.xpath('cbc:TotalAmount', 'cbc' => cbc).text).to_s + colum + #Monto Total del documento incluida la percepcion
+        #Base Imponible percepcion o Valor Referencial del sercicio de transporte de bienes realizado por via terrestre
+        (element.xpath('cbc:ReferenceAmount', 'cbc' => cbc).text).to_s  
+        strtrama = strtrama + "<br>"
+        end
+
+
  return strtrama
 
 
