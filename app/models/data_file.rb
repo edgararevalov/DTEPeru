@@ -221,6 +221,27 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
             strtrama = strtrama + "<br>"
         end
 
+   #IMPUESTOS DEL ITEM DEIM 
+        xml_doc.xpath("//cac:InvoiceLine/cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+            strtrama = strtrama + "<b>DEIM|</b>" +
+            element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
+            # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
+            element.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
+            # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)
+            element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
+            element.xpath('cac:TaxSubtotal/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
+            element.xpath('cac:TaxSubtotal/cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
+            # AfectaciÛn del IGV
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange','cac' => cac,'cbc' => cbc).text + "|" + # Sistema de ISC
+            # IdentificaciÛn del tributo
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +# Nombre del Tributo
+            # CÛdigo del Tipo de Tributo
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+            strtrama = strtrama + "<br>"
+        end
+
 
  return strtrama
 
