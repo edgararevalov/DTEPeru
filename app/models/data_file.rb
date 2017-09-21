@@ -182,6 +182,45 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
         strtrama = strtrama + "<br>"
         end
 
+   #NOTAS DEL DOCUMENTO DN
+        xml_doc.xpath("//sac:AdditionalProperty",'sac' => sac ).each do |element|
+            strtrama = strtrama + "<b>DN|</b>" + element.xpath('cbc:ID','cbc' => cbc).text + "|" + # C√≥digos de LA LEYENDA
+            element.xpath('cbc:Value', 'cbc' => cbc).text + "|"  # Glosa de la Leyenda
+            strtrama = strtrama + "<br>"
+        end
+
+   #DETALLES DEL ITEM DE
+        xml_doc.xpath("//cac:InvoiceLine", 'cac' => cac  ).each do |element|
+            strtrama = strtrama + "<b>DE|</b>" +
+            element.xpath('cbc:ID','cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
+            # Precio de Venta Unitario x item
+            element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount', 'cac' => cac,'cbc' => cbc).text + "|" + 
+            element.xpath('cbc:InvoicedQuantity[@unitCode] ','cbc' => cbc).attribute('unitCode') + "|"  + # Unidad de medida
+            element.xpath('cbc:InvoicedQuantity','cbc' => cbc).text + "|" + # Cantidad de Unidades Vendidas
+            element.xpath('cbc:LineExtensionAmount','cbc' => cbc).text + "|" + # Valor de venta por ITEM
+            element.xpath('cac:Item/cac:SellersItemIdentification/cbc:ID', 'cac' => cac,'cbc' => cbc).text + "|" + # Codigo del Item
+            # Tipo de precio de venta
+            element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceTypeCode', 'cac' => cac,'cbc' => cbc).text + "|" + 
+            element.xpath('cac:Price/cbc:PriceAmount','cac' => cac,'cbc' => cbc).text + "|" + # Valor de venta unitario x item
+            element.xpath('cbc:LineExtensionAmount','cac' => cac,'cbc' => cbc).text + "|"  # Valor de venta por ITEM
+            strtrama = strtrama + "<br>"
+        end
+        
+     #DESCRIPCION DEL ITEM DEDI DEDI
+        xml_doc.xpath("//cac:InvoiceLine/cac:Item/cbc:Description", 'cac' => cac,'cbc' => cbc  ).each do |element|
+            strtrama = strtrama + "<b>DEDI|</b>" +
+            element.text + "|"  # Correlativo de la Linea o Detalle
+            strtrama = strtrama + "<br>"
+        end
+        
+     #DESCUENTOS Y RECARGOS DEL ITEM DEDR
+        xml_doc.xpath("//cac:InvoiceLine/cac:AllowanceCharge", 'cac' => cac,'cbc' => cbc  ).each do |element|
+            strtrama = strtrama + "<b>DEDR|</b>" +
+            element.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
+            element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|"  # Correlativo de la Linea o Detalle
+            strtrama = strtrama + "<br>"
+        end
+
 
  return strtrama
 
