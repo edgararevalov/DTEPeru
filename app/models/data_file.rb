@@ -23,7 +23,7 @@ class DataFile < ActiveRecord::Base
       return @path
   end
 
-  def tramaoriginal(xmlfiles)
+  def tramaoriginal(xmlfiles,tipocpe)
 
 
     xml = File.new(xmlfiles)
@@ -37,7 +37,12 @@ class DataFile < ActiveRecord::Base
     sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
     xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     colum = "|"
-
+    if tipocpe == 1
+       strcpe = "//cac:InvoiceLine"
+    else 
+       strcpe = "//cac:CreditNoteLine"
+    end
+ 
    #Encabezado
     strtrama =  "<b>EN|</b>" + xml_doc.xpath('//cbc:InvoiceTypeCode', 'cbc' => cbc).text + "|" +  #Tipo de Documento
     xml_doc.xpath('//cbc:ID' , 'cbc' => cbc)[2].text + "|" +   #Serie y Correlativo
@@ -222,7 +227,7 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
         end
 
    #IMPUESTOS DEL ITEM DEIM 
-        xml_doc.xpath("//cac:InvoiceLine/cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+        xml_doc.xpath(strcpe +"/cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
             strtrama = strtrama + "<b>DEIM|</b>" +
             element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
             # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
