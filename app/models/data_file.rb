@@ -215,7 +215,13 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
             # Tipo de precio de venta
             element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceTypeCode', 'cac' => cac,'cbc' => cbc).text + "|" + 
             element.xpath('cac:Price/cbc:PriceAmount','cac' => cac,'cbc' => cbc).text + "|" + # Valor de venta unitario x item
-            element.xpath('cbc:LineExtensionAmount','cac' => cac,'cbc' => cbc).text + "|"  # Valor de venta por ITEM
+            element.xpath('cbc:LineExtensionAmount','cac' => cac,'cbc' => cbc).text + "|" + # Valor de venta por ITEM
+            # Número de lote   
+            element.xpath('cac:Item/cac:ItemInstance/cac:LotIdentification/cbc:LotNumberID','cac' => cac,'cbc' => cbc).text +  colum + 
+            element.xpath('cac:BrandName','cac' => cac,'cbc' => cbc).text +  colum + # Marca
+            element.xpath('cac:OriginCountry','cac' => cac,'cbc' => cbc).text +  colum + # Pais de origen
+            # Nª de Posicion que el Item comprado tiene en la Orden de Compra
+            element.xpath('cac:OrderLineReference/cbc:LineID','cac' => cac,'cbc' => cbc).text  
             strtrama = strtrama + "<br>"
         end
         
