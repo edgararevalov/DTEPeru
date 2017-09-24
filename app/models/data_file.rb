@@ -40,9 +40,11 @@ class DataFile < ActiveRecord::Base
     if tipocpe == "01"
        strcpe = "//cac:InvoiceLine"
        strquantity = "cbc:InvoicedQuantity"
+       parentline = "InvoiceLine"    
     else 
        strcpe = "//cac:CreditNoteLine"
        strquantity = "cbc:CreditedQuantity"
+       parentline = "CreditNoteLine" 
     end
  
    #Encabezado
@@ -235,8 +237,8 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
      #DESCUENTOS Y RECARGOS DEL ITEM DEDR
         xml_doc.xpath(strcpe + "/cac:AllowanceCharge", 'cac' => cac,'cbc' => cbc  ).each do |element|
             strtrama = strtrama + "<b>DEDR|</b>" +
-            element.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
-            element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|"  # Correlativo de la Linea o Detalle
+            element.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Indicador de Tipo
+            element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text   # Monto Descuento o Recargo
             strtrama = strtrama + "<br>"
         end
 
@@ -261,6 +263,38 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
             strtrama = strtrama + "<br>"
         end
 
+         #IMPUESTOS GLOBALES
+=begin
+          xml_doc.xpath("Invoice/cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+            strtrama = strtrama + "<b>DI|</b>" +
+            element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Sumatoria Tributo (IGV+ISC+ Otros)
+            # Sumatoria por Tributo (IGV,ISC, Otros)
+            element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
+            # Identificación del tributo
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + # Nombre del Tributo
+            # Código del Tipo de Tributov            
+            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|"
+=end       
+
+            xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+
+               if element.parent.name != parentline
+                   strtrama = strtrama + "<b>DI|</b>" +
+                 element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Sumatoria Tributo (IGV+ISC+ Otros)
+                 # Sumatoria por Tributo (IGV,ISC, Otros)
+                element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
+                 # Identificación del tributo
+                element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+                 # Nombre del Tributo
+               element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + 
+                 # Código del Tipo de Tributov            
+               element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|"
+                 strtrama = strtrama + "<br>"
+               end
+            end
+
+     
 
  return strtrama
 
