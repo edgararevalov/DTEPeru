@@ -264,19 +264,6 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
         end
 
          #IMPUESTOS GLOBALES
-=begin
-          xml_doc.xpath("Invoice/cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
-            strtrama = strtrama + "<b>DI|</b>" +
-            element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Sumatoria Tributo (IGV+ISC+ Otros)
-            # Sumatoria por Tributo (IGV,ISC, Otros)
-            element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
-            # Identificación del tributo
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + # Nombre del Tributo
-            # Código del Tipo de Tributov            
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|"
-=end       
-
             xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
 
                if element.parent.name != parentline
@@ -294,6 +281,19 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
                end
             end
 
+         #REFERENCIAS A FACTURAS 
+            xml_doc.xpath("//cac:InvoiceDocumentReference", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+                   strtrama = strtrama + "<b>RE|</b>" +
+                   # Serie y número del documento que modifica (Factura)
+                   element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Fecha de emisión
+                   element.xpath('cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Tipo de documento del documento que modifica (Factura)
+                   element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" +     
+                   #(Tipo de documento - Catálogo No. 12)
+                   element.xpath('cbc:DocumentType','cac' => cac,'cbc' => cbc).text      
+                   strtrama = strtrama + "<br>"
+            end    
      
 
  return strtrama
