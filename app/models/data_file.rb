@@ -36,28 +36,49 @@ class DataFile < ActiveRecord::Base
     cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
     sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
     xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+    strparentname = ""
+
     colum = "|"
     if tipocpe == "01"
        strcpe = "//cac:InvoiceLine"
        strquantity = "cbc:InvoicedQuantity"
        parentline = "InvoiceLine"    
+       strroot = "Invoice" 
     else 
        strcpe = "//cac:CreditNoteLine"
        strquantity = "cbc:CreditedQuantity"
        parentline = "CreditNoteLine" 
+       strroot = "CreditNote"
     end
  
    #Encabezado
-    strtrama =  "<b>EN|</b>" + tipocpe.to_s + "|" +  #Tipo de Documento
-    xml_doc.xpath('//cbc:ID' , 'cbc' => cbc)[2].text + "|" +   #Serie y Correlativo
+    strtrama =  "<b>EN|</b>" + tipocpe.to_s + "|"   #Tipo de Documento
+   #Serie y Correlativo  
+   xml_doc.xpath('//cbc:ID','cbc' => cbc).each do |element|
+           if element.parent.name ==strroot 
+               strtrama = strtrama + element.text + "|" 
+           end
+    end
+
+    strtrama = strtrama +
     xml_doc.xpath('//cac:DiscrepancyResponse/cbc:ResponseCode', 'cac' => cac, 'cbc' => cbc).text + colum +  #Tipo de Nota de Credito Debito
     xml_doc.xpath('//cac:DiscrepancyResponse/cbc:ReferenceID', 'cac' => cac, 'cbc' => cbc).text + colum +  #Factura que Referencia a la NC
-    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:Description', 'cac' => cac, 'cbc' => cbc).text + colum  + # Sustento
-    xml_doc.xpath('//cbc:IssueDate' , 'cbc' => cbc).text + colum +  #Fecha de Emision
+    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:Description', 'cac' => cac, 'cbc' => cbc).text + colum   # Sustento
+
+    #Fecha de Emision
+     xml_doc.xpath('//cbc:IssueDate','cbc' => cbc).each do |element|
+           if element.parent.name ==strroot 
+               strtrama = strtrama + element.text + "|" 
+           end
+    end
+   # xml_doc.xpath('//cbc:IssueDate' , 'cbc' => cbc).text + colum +  #Fecha de Emision
+
+    strtrama = strtrama +
     xml_doc.xpath('//cbc:DocumentCurrencyCode' , 'cbc' => cbc).text + colum + # Tipo de Moneda
-    xml_doc.xpath('//cbc:CustomerAssignedAccountID' , 'cbc' => cbc).text + colum + # RUC Emisor
+    xml_doc.xpath('//cac:AccountingSupplierParty/cbc:CustomerAssignedAccountID' ,'cac' => cac, 'cbc' => cbc).text + colum + # RUC Emisor
     xml_doc.xpath('//cac:AccountingSupplierParty/cbc:AdditionalAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Identificador Emisor
-    xml_doc.xpath('//cac:PartyName/cbc:Name' , 'cac' => cac, 'cbc' => cbc).text + colum + # Nombre comercial del Emisor
+                # Nombre comercial del Emisor
+    xml_doc.xpath('//cac:AccountingSupplierParty/cac:PartyName/cbc:Name' , 'cac' => cac, 'cbc' => cbc).text + colum + 
     xml_doc.xpath('//cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Razon Social Emisor
     xml_doc.xpath('//cac:PostalAddress/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Codigo Ubigeo del Emisor
     xml_doc.xpath('//cac:PostalAddress/cbc:StreetName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Emisor
@@ -294,6 +315,28 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
                    element.xpath('cbc:DocumentType','cac' => cac,'cbc' => cbc).text      
                    strtrama = strtrama + "<br>"
             end    
+
+     #REFERENCIAS A GUIAS  
+            xml_doc.xpath("//cac:DespatchDocumentReference", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+                   strtrama = strtrama + "<b>RE|</b>" + "|" + "|" + "|" +
+                   # En el caso de Guías de Remisión Número de guía: serie - número de documento
+                   element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #En el caso de Guías de Remisión Tipo de Documento
+                   element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+                   strtrama = strtrama + "<br>"
+            end  
+
+     #REFERENCIAS A OTROS DOCUMENTOS   
+            xml_doc.xpath("//cac:AdditionalDocumentReference", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+                   strtrama = strtrama + "<b>RE|</b>" +
+                   # Serie y número del documento que referencia la factura
+                   element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Fecha de emisión
+                   element.xpath('cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Tipo de documento del documento que modifica (Factura)
+                   element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+                   strtrama = strtrama + "<br>"
+            end  
      
 
  return strtrama
