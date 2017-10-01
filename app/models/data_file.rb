@@ -337,6 +337,36 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
                    element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
                    strtrama = strtrama + "<br>"
             end  
+
+     #Descuentos y Recargos Globales   
+            xml_doc.xpath("//cac:AllowanceCharge", 'cac' => cac).each do |element| 
+                   if element.parent.name    != parentline
+
+		           strtrama = strtrama + "<b>DR|</b>" +
+		           # Tipo de Movimiento D/R
+		           element.xpath('cbc:ChargeIndicator','cbc' => cbc).text + "|" + 
+		           #Código Motivo D/R
+		           element.xpath('cbc:AllowanceChargeReasonCode','cbc' => cbc).text + "|" + 
+		           #TGlosa D/R
+		           element.xpath('cbc:AllowanceChargeReason','cac' => cac,'cbc' => cbc).text + "|" +  
+		           #Moneda
+		           element.xpath('cbc:Amount [@currencyID]','cac' => cac,'cbc' => cbc).attribute('currencyID') + "|" +  
+		           #Monto D/R
+		           element.xpath('cbc:Amount','cbc' => cbc).text + "|" +  
+		           #Identificación Tributo
+		           element.xpath('cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +  
+		           #Nombre del Tributo
+		           element.xpath('cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +  
+		           #Código Tipo de Tributo
+		           element.xpath('cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" +  
+		           #Factor
+		           element.xpath('cbc:MultiplierFactorNumeric','cac' => cac,'cbc' => cbc).text + "|" +  
+		           #Monto Base
+		           element.xpath('cbc:BaseAmount','cac' => cac,'cbc' => cbc).text + "|"  
+
+		           strtrama = strtrama + "<br>"
+                  end
+            end  
      
 
  return strtrama
