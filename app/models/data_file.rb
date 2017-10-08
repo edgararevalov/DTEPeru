@@ -37,6 +37,7 @@ class DataFile < ActiveRecord::Base
     sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
     xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     strparentname = ""
+    idline = 1
 
     colum = "|"
     if tipocpe == "01"
@@ -246,44 +247,44 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
             # Nª de Posicion que el Item comprado tiene en la Orden de Compra
             element.xpath('cac:OrderLineReference/cbc:LineID','cac' => cac,'cbc' => cbc).text  
             strtrama = strtrama + "<br>"
-        end
-        
-     #DESCRIPCION DEL ITEM DEDI DEDI
-        xml_doc.xpath(strcpe +"/cac:Item/cbc:Description", 'cac' => cac,'cbc' => cbc  ).each do |element|
-            strtrama = strtrama + "<b>DEDI|</b>" +
-            element.text + "|"  # Correlativo de la Linea o Detalle
-            strtrama = strtrama + "<br>"
-        end
-        
-     #DESCUENTOS Y RECARGOS DEL ITEM DEDR
-        xml_doc.xpath(strcpe + "/cac:AllowanceCharge", 'cac' => cac,'cbc' => cbc  ).each do |element|
-            strtrama = strtrama + "<b>DEDR|</b>" +
-            element.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Indicador de Tipo
-            element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text   # Monto Descuento o Recargo
-            strtrama = strtrama + "<br>"
+             #DESCRIPCION DEL ITEM DEDI DEDI
+            element.xpath("cac:Item", 'cac' => cac  ).each do |item|
+                  strtrama = strtrama + "<b>DEDI|</b>" +
+                  item.xpath('cbc:Description','cbc' => cbc).text + "|"   # Descripcion
+                  strtrama = strtrama + "<br>"
+            end
+             #DESCUENTOS Y RECARGOS DEL ITEM DEDR
+             element.xpath("cac:AllowanceCharge", 'cac' => cac ).each do |itemcharge|
+                 strtrama = strtrama + "<b>DEDR|</b>" +
+                 itemcharge.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Indicador de Tipo
+                 itemcharge.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text   # Monto Descuento o Recargo
+                 strtrama = strtrama + "<br>"
+             end
+           #IMPUESTOS DEL ITEM DEIM 
+		element.xpath("cac:TaxTotal", 'cac' => cac  ).each do |itemtax|
+		    strtrama = strtrama + "<b>DEIM|</b>" +
+		    itemtax.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
+		    # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
+		    itemtax.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
+		    # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)
+		    itemtax.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
+		    itemtax.xpath('cac:TaxSubtotal/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
+		    itemtax.xpath('cac:TaxSubtotal/cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
+		    # AfectaciÛn del IGV
+		    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
+		    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange','cac' => cac,'cbc' => cbc).text + "|" + # Sistema de ISC
+		    # IdentificaciÛn del tributo
+		    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
+                    # Nombre del Tributo
+		    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +
+		    # CÛdigo del Tipo de Tributos
+		    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+		    strtrama = strtrama + "<br>"
+		end
+
         end
 
-   #IMPUESTOS DEL ITEM DEIM 
-        xml_doc.xpath(strcpe +"/cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
-            strtrama = strtrama + "<b>DEIM|</b>" +
-            element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
-            # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
-            element.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
-            # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)
-            element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
-            element.xpath('cac:TaxSubtotal/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
-            element.xpath('cac:TaxSubtotal/cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
-            # AfectaciÛn del IGV
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange','cac' => cac,'cbc' => cbc).text + "|" + # Sistema de ISC
-            # IdentificaciÛn del tributo
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +# Nombre del Tributo
-            # CÛdigo del Tipo de Tributos
-            element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
-            strtrama = strtrama + "<br>"
-        end
-
+  
          #IMPUESTOS GLOBALES
             xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
 
@@ -367,7 +368,66 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
 		           strtrama = strtrama + "<br>"
                   end
             end  
+
+        #FORMA DE PAGO   
+            xml_doc.xpath("//cac:PaymentMeans", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+                   strtrama = strtrama + "<b>FP|</b>" +
+                   # Forma de Pago
+                   element.xpath('cbc:PaymentMeansCode','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Fecha de Vencimiento de Pago
+                   element.xpath('cbc:PaymentDueDate','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Identificador de Forma de Pago
+                   element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" 
+
+                 
+                   strtrama = strtrama + "<br>"
+            end  
      
+ #ANTICIPOS Y PREPAGOS   
+            xml_doc.xpath("//cac:PaymentTerms", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+                   strtrama = strtrama + "<b>PP|</b>" +
+                   # Id del Anticipo
+                   element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Monto del Anticipo
+                   element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|"  
+                                  
+                   strtrama = strtrama + "<br>"
+            end  
+
+            xml_doc.xpath("//cac:PrepaidPayment", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+                   strtrama = strtrama + "<b>PP|</b>" +
+                   # Fecha de recepción
+                   element.xpath('cbc:ReceivedDate','cac' => cac,'cbc' => cbc).text + "|" + 
+                   #Fecha de Pago
+                   element.xpath('cbc:PaidDate','cac' => cac,'cbc' => cbc).text + "|"  + 
+                   #Hora de Pago
+                   " " +  "|"  + 
+		   #Tipo de Documento 
+                  element.xpath('cbc:ID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') + "|" + 
+		   #Serie - Correlativo 
+                  element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+		   #Tipo de Documento de Identidad del Emisor del Anticipo
+                  element.xpath('cbc:InstructionID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') + "|" + 
+		  #Numero de Identidad del Emisor del Anticipo
+                  element.xpath('cbc:InstructionID','cac' => cac,'cbc' => cbc).text + "|" 
+
+                                  
+                   strtrama = strtrama + "<br>"
+            end  
+
+#CAMPOS PERSONALIZADOS 
+
+            xml_doc.xpath("//CustomText/Text").each do |element|
+                   strtrama = strtrama + "<b>PE|</b>" + element.attribute('name') + "|" + element.text + "|" + "<br>"
+             end
+
+            xml_doc.xpath("//CustomText/Section").each do |section|
+                    strtrama = strtrama + "<b>PES|</b>" + section.attribute('name') + "<br>"
+                     section.xpath('Detail').each do  |detail|
+                        strtrama = strtrama + "<b>PESD|</b>" + detail.xpath('Value')[0].text  + "|" + detail.xpath('Value')[1].text + "<br>"
+                     end 
+             end
+
 
  return strtrama
 
