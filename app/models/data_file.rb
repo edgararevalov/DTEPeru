@@ -219,11 +219,15 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
     end
 
    #NOTAS DEL DOCUMENTO DN
+   contador =1
+  
         xml_doc.xpath("//sac:AdditionalProperty",'sac' => sac ).each do |element|
-            strtrama = strtrama + "<b>DN|</b>" + element.xpath('cbc:ID','cbc' => cbc).text + "|" + # C√≥digos de LA LEYENDA
+            strtrama = strtrama + "<b>DN|</b>" + contador.to_s + "|" + # Número de Línea de Nota
+            element.xpath('cbc:ID','cbc' => cbc).text + "|" + # C0digos de LA LEYENDA
             element.xpath('cbc:Value', 'cbc' => cbc).text + "|" +  # Glosa de la Leyenda
             element.xpath('cbc:Name', 'cbc' => cbc).text  #Descripcion del tramo o viaje
             strtrama = strtrama + "<br>"
+            contador += 1   
         end
 
    #DETALLES DEL ITEM DE
