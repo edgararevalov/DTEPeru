@@ -79,9 +79,11 @@ class DataFile < ActiveRecord::Base
     xml_doc.xpath('//cac:AccountingSupplierParty/cbc:CustomerAssignedAccountID' ,'cac' => cac, 'cbc' => cbc).text + colum + # RUC Emisor
     xml_doc.xpath('//cac:AccountingSupplierParty/cbc:AdditionalAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Identificador Emisor
                 # Nombre comercial del Emisor
-    xml_doc.xpath('//cac:AccountingSupplierParty/cac:PartyName/cbc:Name' , 'cac' => cac, 'cbc' => cbc).text + colum + 
-    xml_doc.xpath('//cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Razon Social Emisor
+    xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name' , 'cac' => cac, 'cbc' => cbc).text + colum + 
+
+    xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Razon Social Emisor
     xml_doc.xpath('//cac:PostalAddress/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Codigo Ubigeo del Emisor
+
     xml_doc.xpath('//cac:PostalAddress/cbc:StreetName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Emisor
     xml_doc.xpath('//cac:PostalAddress/cbc:CountrySubentity' , 'cac' => cac, 'cbc' => cbc).text + colum + # Departamento del Emisor
     xml_doc.xpath('//cac:PostalAddress/cbc:CityName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Provincia del Emisor
