@@ -40,7 +40,8 @@ class DataFile < ActiveRecord::Base
     idline = 1
 
     colum = "|"
-    if tipocpe == "01"
+    
+    if tipocpe == "01" || tipocpe == "03"
        strcpe = "//cac:InvoiceLine"
        strquantity = "cbc:InvoicedQuantity"
        parentline = "InvoiceLine"    
@@ -203,19 +204,22 @@ xml_doc.xpath('//cbc:ExpiryDate' , 'cac' => cac, 'cbc' => cbc).text + colum +
 
 
 #Modalidad de Traslado del remitente
-xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/cbc:TransportModeCode' ,'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum 
+xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cbc:TransportModeCode' ,'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum 
 
 #DETALLE DE OTROS CONCEPTOS DOC
   strtrama = strtrama + "<br>"
   xml_doc.xpath("//sac:AdditionalMonetaryTotal",'sac' => sac ).each do |element|
         # C√≥digos de otros conceptos tributarios o comerciales recomendados    
-        strtrama = strtrama +  "<b>DOC|</b>" + (element.xpath('cbc:ID','cbc' => cbc).text).to_s + colum + 
+    strtrama = strtrama +  "<b>DOC|</b>" + (element.xpath('cbc:ID','cbc' => cbc).text).to_s + colum + 
         (element.xpath('cbc:PayableAmount', 'cbc' => cbc).text).to_s + colum + # Total Valor Venta Neto
-        (element.xpath('cbc:TotalAmount', 'cbc' => cbc).text).to_s + colum + #Monto Total del documento incluida la percepcion
+        (element.xpath('sac:TotalAmount', 'sac' => sac).text).to_s + colum + #Monto Total del documento incluida la percepcion
         #Base Imponible percepcion o Valor Referencial del sercicio de transporte de bienes realizado por via terrestre
-        (element.xpath('cbc:ReferenceAmount', 'cbc' => cbc).text).to_s  + colum +
+        (element.xpath('sac:ReferenceAmount', 'sac' => sac).text).to_s  + colum +
         #Porcentaje de Detraccion 
-       (element.xpath('cbc:Percent', 'cbc' => cbc).text).to_s
+       (element.xpath('cbc:Percent', 'cbc' => cbc).text).to_s + colum +
+        #Regimen de Percepcion 
+        element.xpath('cbc:ID','cbc' => cbc).attribute('schemeID').to_s
+       
        
          strtrama = strtrama + "<br>"
     end
@@ -390,18 +394,14 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
             end  
      
  #ANTICIPOS Y PREPAGOS   
-            xml_doc.xpath("//cac:PaymentTerms", 'cac' => cac,'cbc' => cbc  ).each do |element| 
-                   strtrama = strtrama + "<b>PP|</b>" +
-                   # Id del Anticipo
-                   element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
-                   #Monto del Anticipo
-                   element.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|"  
-                                  
-                   strtrama = strtrama + "<br>"
-            end  
-
+           
             xml_doc.xpath("//cac:PrepaidPayment", 'cac' => cac,'cbc' => cbc  ).each do |element| 
                    strtrama = strtrama + "<b>PP|</b>" +
+                   # ID del Anticipo
+                   element.xpath('cbc:ID','cbc' => cbc).text + "|" +
+                   # Monto del PrePago
+                   element.xpath('cbc:PaidAmount','cbc' => cbc).text + "|" +
+                   
                    # Fecha de recepción
                    element.xpath('cbc:ReceivedDate','cac' => cac,'cbc' => cbc).text + "|" + 
                    #Fecha de Pago
@@ -420,6 +420,28 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cac:Shipment/cac:ShipmentStage/c
                                   
                    strtrama = strtrama + "<br>"
             end  
+            
+            #MULTIPLACA
+             
+              contador =1
+            xml_doc.xpath("//sac:SUNATCosts/cac:RoadTransport", 'sac' => sac,'cac' => cac).each do |element| 
+	            
+	              if contador == 1    
+                   strtrama = strtrama + "<b>MP|</b>"  
+                  end    
+                   contador += 1
+                   # ID del Anticipo
+                  strtrama = strtrama + element.xpath('cbc:LicensePlateID','cbc' => cbc).text + ","                          
+                  
+                   if contador == 8 
+	                  contador = 1
+	                  strtrama = strtrama +  "<br>"
+	               end    
+                                   
+                   
+            end
+            
+            
 
 #CAMPOS PERSONALIZADOS 
 
