@@ -291,6 +291,11 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cbc:TransportModeCode' ,'sac' =>
 		    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
 		    strtrama = strtrama + "<br>"
 		end
+           #INFORMACION ADICIONAL A NIVEL DE ITEM - CASTOS INTERESES HIPOTECARIOS PRIMERA VIVIENDA
+                  strtrama = strtrama + "<b>DEGH|</b>" +
+                  element.xpath('cac:Item/cac:ItemSpecificationDocumentReference/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # N de Contrato
+                  element.xpath('cac:Item/cac:ItemSpecificationDocumentReference/cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|"  # Fecha de Otorgamiento del credito
+                  strtrama = strtrama + "<br>"
 
         end
 
