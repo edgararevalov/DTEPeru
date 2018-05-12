@@ -294,7 +294,28 @@ xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/cbc:TransportModeCode' ,'sac' =>
            #INFORMACION ADICIONAL A NIVEL DE ITEM - CASTOS INTERESES HIPOTECARIOS PRIMERA VIVIENDA
                   strtrama = strtrama + "<b>DEGH|</b>" +
                   element.xpath('cac:Item/cac:ItemSpecificationDocumentReference/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # N de Contrato
-                  element.xpath('cac:Item/cac:ItemSpecificationDocumentReference/cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|"  # Fecha de Otorgamiento del credito
+                  element.xpath('cac:Item/cac:ItemSpecificationDocumentReference/cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|" +  # Fecha de Otorgamiento del credito
+
+                  #TIPO DE PRESTAMO
+                  element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:Name','cac' => cac,'cbc' => cbc)[0].text + "|" + # Tipo de Prestamo - Descripcion
+                 # element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:NameCode','cac' => cac,'cbc' => cbc)[0].text + "|" + # Tipo de Prestamo - Codigo Descripcion
+                  element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:Value','cac' => cac,'cbc' => cbc)[0].text + "|" +  # Tipo de Prestamos - Codigo Descripcion
+
+
+
+                  #PARTIDA REGISTRAL 
+                  element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:Name','cac' => cac,'cbc' => cbc)[1].text + "|" + # Partida Registral - Descripcion
+                 # element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:NameCode','cac' => cac,'cbc' => cbc)[0].text + "|" + # Partida Registral- Codigo Descripcion
+                  element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:Value','cac' => cac,'cbc' => cbc)[1].text + "|" +  # Partida Registral - Codigo Descripcion
+
+
+
+                  #INDICADOR DE PRIMERA VIVIENDA
+                  element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:Name','cac' => cac,'cbc' => cbc)[2].text + "|" + # Indicador de Primera Vivienda - Descripcion
+                 # element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:NameCode','cac' => cac,'cbc' => cbc)[0].text + "|" + # Indicador de Primera Vivienda - Codigo Descripcion
+                  element.xpath('cac:Item/cac:AdditionalItemProperty/cbc:Value','cac' => cac,'cbc' => cbc)[2].text + "|"   # Indicador de Primera Vivienda - Codigo Descripcion
+
+
                   strtrama = strtrama + "<br>"
 
         end
