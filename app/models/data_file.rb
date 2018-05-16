@@ -611,10 +611,59 @@ class DataFile < ActiveRecord::Base
           xml_doc.xpath('//cac:AllowanceCharge/cbc:Amount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Monto del cargo
           xml_doc.xpath('//cac:AllowanceCharge/cbc:BaseAmount' , 'cac' => cac, 'cbc' => cbc).text + colum   #FISE Monto base del cargo
 
-
-
-
-
+         #FACTURA GUIA
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>FGA|</b>" +
+          #Urbanizacion del Emisor
+          xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum  +  #   Dirección del Punto de Partida, 
+           #   Dirección del Punto de Partida, Dirección completa y detallada
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cac:AddressLine/cbc:Line' ,'cac' => cac, 'cbc' =>      cbc).text + colum +  
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Partida, Urbanización
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cbc:CityName' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Partida, Provincia
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cbc:CountrySubentity' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Partida, Departamento
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cbc:District' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Partida, Distrito
+          #   Dirección del Punto de Partida, Código de País          
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cac:Country/cbc:IdentificationCode' ,'cac' => cac, 'cbc' =>     cbc).text + colum +   
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Llegada, Código de Ubigeo
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cac:AddressLine/cbc:Line' ,'cac' => cac, 'cbc' =>     cbc).text + colum +   #   Dirección del Punto de Llegada, Dirección completa y detallada
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Dirección del Punto de Llegada, Urbanización
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cbc:CityName' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Llegada, Provincia
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cbc:CountrySubentity' ,'cac' => cac, 'cbc' =>     cbc).text + colum +   #   Dirección del Punto de Llegada, Departamento
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cbc:District' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Dirección del Punto de Llegada, Distrito
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryAddress/cac:Country/cbc:IdentificationCode' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Dirección del Punto de Llegada, Código de País
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:TransportMeans/cac:RoadTransport/cbc:LicensePlateID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Información de vehículo principal - Número de placa
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:TransportMeans/cbc:RegistrationNationalityID' ,'cac' => cac, 'cbc' => cbc).text + colum  +  #   N° constancia de inscripción del vehículo o certificado de habilitacion vehicular
+            ""+colum + # /mARCA DEL VEHICULO
+	    ""+colum + # Numero de licencia de Conducir
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cac:PartyIdentification/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Ruc transportista
+       begin
+         #validar lo de la clase nill
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cac:PartyIdentification/cbc:ID [@schemeID]' ,'cac' => cac, 'cbc' => cbc).attribute('schemeID').text + colum
+       rescue
+        "" + colum  #   Ruc transportista -Tipo Documento         
+       end
+        #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Apellidos y nombres o razón social
+      
+         strtrama = strtrama + xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:RegistrationName' ,'cac' => cac, 'cbc' => cbc).text + colum  + 
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cbc:TransportModeCode' ,'cac' => cac, 'cbc' =>  cbc).text + colum +   #   Modalidad de Traslado del remitente
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Código de motivo de traslado
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cbc:GrossWeightMeasure' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Peso bruto total de la Factura
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryParty/cbc:MarkAttentionIndicator' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Indicador de subcontratación
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:TransitPeriod/cbc:StartDate' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Fecha de inicio del traslado o fecha de entrega de bienes al transportista
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:CompanyID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Registro del MTC
+         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:DriverPerson/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos de conductores - Número de documento de identidad
+      #   Datos de conductores - Tipo de documento
+      begin
+      xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:DriverPerson/cbc:ID [@schemeID]' ,'cac' => cac, 'cbc' => cbc).attribute('schemeID').text + colum 
+      rescue
+        ""+colum  # /mARCA DEL VEHICULO 
+      ensure 
+           #   Información de vehículos secundarios
+         strtrama = strtrama +   xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:TransportHandlingUnit/cac:TransportEquipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum  
+       end
+     
+     
 
 
 	
