@@ -583,7 +583,7 @@ class DataFile < ActiveRecord::Base
        	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + 
 	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Receptor
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Neto
-	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
+	    xml_doc.xpath('//cac:TaxTotal/cbc:TaxAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Descuentos
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:ChargeTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Recargos
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Total
@@ -598,7 +598,24 @@ class DataFile < ActiveRecord::Base
 	  strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>ENEX|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum +  #Version del UBL
 	  xml_doc.xpath("//cbc:InvoiceTypeCode [@listID]",'cbc' => cbc ).attribute('listID') + colum +  #Tipo de Operacion
-	  xml_doc.xpath("//cbc:OrderReference/cbc:ID",'cbc' => cbc ).text + colum   #Orden de Compra
+	  xml_doc.xpath("//cac:OrderReference/cbc:ID",'cac' => cac,'cbc' => cbc ).text + colum +  #Orden de Compra
+          xml_doc.xpath("//cac:LegalMonetaryTotal/cbc:PayableRoundingAmount",'cac' => cac,'cbc' => cbc ).text + colum +  #Redondedo
+          xml_doc.xpath("//cac:LegalMonetaryTotal/cbc:PrepaidAmount",'cac' => cac,'cbc' => cbc ).text + colum +  #Total Anticipos
+          xml_doc.xpath("//cac:Invoice/cbc:DueDate",'cac' => cac,'cbc' => cbc ).text + colum +  #Fecha de Vencimiento de la Factura
+          xml_doc.xpath("//cbc:IssueTime",'cbc' => cbc ).text + colum +  #Hora de Emision
+          #Codigo Asignado por SUNAT para el establecimiento Anexo
+          xml_doc.xpath("//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode" , 'cac' => cac, 'cbc' => cbc ).text + colum +  
+          xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Total Precio de Venta
+          xml_doc.xpath('//cac:AllowanceCharge/cbc:ChargeIndicator' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Indicador de Cargo
+          xml_doc.xpath('//cac:AllowanceCharge/cbc:AllowanceChargeReasonCode' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Codigo del motivo del cargo
+          xml_doc.xpath('//cac:AllowanceCharge/cbc:Amount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Monto del cargo
+          xml_doc.xpath('//cac:AllowanceCharge/cbc:BaseAmount' , 'cac' => cac, 'cbc' => cbc).text + colum   #FISE Monto base del cargo
+
+
+
+
+
+
 
 	
  
