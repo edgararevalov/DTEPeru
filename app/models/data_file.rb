@@ -546,6 +546,61 @@ class DataFile < ActiveRecord::Base
 		       strtrama = strtrama + element.text + "|" 
 		   end
 	    end
+
+
+
+            strtrama = strtrama +
+	    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:ResponseCode', 'cac' => cac, 'cbc' => cbc).text + colum +  #Tipo de Nota de Credito Debito
+	    xml_doc.xpath('//cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID', 'cac' => cac, 'cbc' => cbc).text + colum +  #Factura que Referencia a la NC
+	    xml_doc.xpath('//cac:DiscrepancyResponse/cbc:Description', 'cac' => cac, 'cbc' => cbc).text + colum   # Sustento
+
+	    #Fecha de Emision
+	     xml_doc.xpath('//cbc:IssueDate','cbc' => cbc).each do |element|
+		   if element.parent.name ==strroot 
+		       strtrama = strtrama + element.text + "|" 
+		   end
+	    end
+	   # 
+
+            strtrama = strtrama +
+	    xml_doc.xpath('//cbc:DocumentCurrencyCode' , 'cbc' => cbc).text + colum + # Tipo de Moneda
+	    xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum + # RUC Emisor
+	    xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum + # Identificador Emisor
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name' ,'cac' => cac, 'cbc' => cbc).text + colum + # Nombre Comercial del Emisor
+            # Apellidos y nombres, denominacion o razon social	 
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' ,'cac' => cac, 'cbc' => cbc).text + colum + 
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum + #Codigo UBIGEO Emisor
+
+             xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine/cbc:Line' ,'cac' => cac, 'cbc' => cbc).text + colum + #Direccion Emisor
+              #Departamento Emisor (Ciudad)
+             xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentity' ,'cac' => cac, 'cbc' => cbc).text + colum +
+             xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CityName' ,'cac' => cac, 'cbc' => cbc).text + colum + #Provincia del Emisor
+             xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District' ,'cac' => cac, 'cbc' => cbc).text + colum + #Distrito del Emisor
+
+            xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Numero de documento de identidad del adquiriente o usuario
+	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum + #Tipo de identidad del adquiriente o usuario
+            # Apellidos y nombres, denominaci'on o raz'on social del adquiriente o usuario
+       	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + 
+	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Receptor
+	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Neto
+	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
+	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Descuentos
+	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:ChargeTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Recargos
+	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Total
+            ""+colum + # /codigos de otros conceptos tributarios recomendados
+	    ""+colum + # Total de Valor Venta Neto
+            xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Numero de documento de identidad del adquiriente o usuario
+	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).text + colum + #Tipo de identidad del adquiriente o usuario
+            #Codigo del pais del Emisor
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Country/cbc:IdentificationCode' ,'cac' => cac, 'cbc' => cbc).text + colum  
+
+ 	 #ENCABEZADO EXTENSION
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>ENEX|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum +  #Version del UBL
+	  xml_doc.xpath("//cbc:InvoiceTypeCode [@listID]",'cbc' => cbc ).attribute('listID') + colum +  #Tipo de Operacion
+	  xml_doc.xpath("//cbc:OrderReference/cbc:ID",'cbc' => cbc ).text + colum   #Orden de Compra
+
+	
  
         return strtrama
          
