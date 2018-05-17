@@ -646,16 +646,16 @@ class DataFile < ActiveRecord::Base
         #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Apellidos y nombres o razón social
       
          strtrama = strtrama + xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:RegistrationName' ,'cac' => cac, 'cbc' => cbc).text + colum  + 
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cbc:TransportModeCode' ,'cac' => cac, 'cbc' =>  cbc).text + colum +   #   Modalidad de Traslado del remitente
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Código de motivo de traslado
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cbc:GrossWeightMeasure' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Peso bruto total de la Factura
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryParty/cbc:MarkAttentionIndicator' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Indicador de subcontratación
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:TransitPeriod/cbc:StartDate' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Fecha de inicio del traslado o fecha de entrega de bienes al transportista
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:CompanyID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Registro del MTC
-         xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:DriverPerson/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos de conductores - Número de documento de identidad
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cbc:TransportModeCode' ,'cac' => cac, 'cbc' =>  cbc).text + colum +   #   Modalidad de Traslado del remitente
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Código de motivo de traslado
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cbc:GrossWeightMeasure' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Peso bruto total de la Factura
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:Delivery/cac:DeliveryParty/cbc:MarkAttentionIndicator' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Indicador de subcontratación
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:TransitPeriod/cbc:StartDate' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Fecha de inicio del traslado o fecha de entrega de bienes al transportista
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:CompanyID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Registro del MTC
+         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:DriverPerson/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos de conductores - Número de documento de identidad
       #   Datos de conductores - Tipo de documento
       begin
-      xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:DriverPerson/cbc:ID [@schemeID]' ,'cac' => cac, 'cbc' => cbc).attribute('schemeID').text + colum 
+      xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:DriverPerson/cbc:ID [@schemeID]' ,'cac' => cac, 'cbc' => cbc).attribute('schemeID').text + colum 
       rescue
         ""+colum  # /mARCA DEL VEHICULO 
       ensure 
@@ -663,7 +663,170 @@ class DataFile < ActiveRecord::Base
          strtrama = strtrama +   xml_doc.xpath('///Invoice/cac:Delivery/cac:Shipment/cac:TransportHandlingUnit/cac:TransportEquipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum  
        end
      
-     
+     #VENTA ITENERANTE
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>VITE|</b>" +
+       # Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de ubigeo - Catálogo No. 13)
+       xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:ID ' ,'cac' => cac, 'cbc' =>     cbc).text + colum +  
+        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Dirección completa y detallada) 
+       xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:AddressLine/cbc:Line ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+        #   Dirección del lugar en el que se entrega el bien o se presta el servicio(Urbanización)
+        xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CitySubdivisionName ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Provincia)  
+        xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName ' ,'cac' => cac, 'cbc' =>      cbc).text + colum +
+        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Departamento)
+        xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentity ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Distrito) 
+        xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:District' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   
+        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de país - Catálogo No. 04)
+       xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode ' ,'cac' => cac, 'cbc' =>      cbc).text + colum    
+
+    #FACTURA DE EXPORTACION
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>FEX|</b>" +
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cbc:InsuranceValueAmount' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Valor del seguro
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:FreightAllowanceCharge/cbc:Amount' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Valor del flete
+          xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cbc:FreeOnBoardValueAmount' ,'cac' => cac, 'cbc' =>      cbc).text + colum    #   Valor FOB
+ 
+
+    #PERCEPCIONES
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>PERC|</b>" +
+   
+
+           xml_doc.xpath('//Invoice/cac:AllowanceCharge/cbc:ChargeIndicator'  ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Indicador de Percepcion
+           xml_doc.xpath('//Invoice/cac:AllowanceCharge/cbc:AllowanceChargeReasonCode' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Codigo de Percepcion
+           xml_doc.xpath('//Invoice/cac:AllowanceCharge/cbc:MultiplierFactorNumeric'  ,'cac' => cac, 'cbc' => cbc).text + colum +   #   (Factor del cargo/descuento)
+           xml_doc.xpath('//Invoice/cac:AllowanceCharge/cbc:Amount'  ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Monto de la Percepcion
+         begin
+           xml_doc.xpath('//Invoice/cac:AllowanceCharge/cbc:Amount [@currencyID]' ,'cac' => cac, 'cbc' => cbc).attribute('currencyID').text + colum    #   Moneda
+         rescue
+             ""+ colum  # /BLANCO
+         end 
+
+
+   #DETRACCIONES
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>DET|</b>" +
+
+    	  xml_doc.xpath('//Invoice/cac:PaymentTerms/cbc:PaymentMeansID  ' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Código del Bien o Servicio Sujeto a Detracción
+ 	  xml_doc.xpath('//Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID  ' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Número de cta. en el Banco de la Nación
+	  xml_doc.xpath('//Invoice/cac:PaymentTerms/cbc:PaymentPercent  ' ,'cac' => cac, 'cbc' => cbc).text + colum +   #    Porcentaje de la detracción
+	  xml_doc.xpath('//Invoice/cac:PaymentTerms/cbc:Amount ' ,'cac' => cac, 'cbc' => cbc).text + colum    #   Monto de la Detracción
+
+      #GLOSAS
+	  strtrama = strtrama + "<br>"
+
+
+             contador =1
+	  
+	           xml_doc.xpath("//cbc:Note", 'cbc' => cbc  ).each do |element| 
+
+                    if element.parent.name ==strroot 
+
+		           strtrama = strtrama +  "<b>DN|</b>" + contador.to_s + "|" + # Número de Línea de Nota
+		           element.attribute('languageLocaleID') + colum +   #   Código de la leyend
+		            #Glosa de la leyenda
+		           element.text + "|" 		         
+		           strtrama = strtrama + "<br>"
+                           contador += 1  
+                     end
+
+		    end  
+        #DETALLES DEL ITEM DE
+		xml_doc.xpath(strcpe, 'cac' => cac  ).each do |element|
+		    strtrama = strtrama + "<b>DE|</b>" +
+		    element.xpath('cbc:ID','cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
+		    # Precio de Venta Unitario x item
+		    element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount', 'cac' => cac,'cbc' => cbc).text + "|" + 
+		    element.xpath( strquantity +'[@unitCode]','cbc' => cbc).attribute('unitCode') + "|"  + # Unidad de medida
+		    element.xpath(strquantity,'cbc' => cbc).text + "|" + # Cantidad de Unidades Vendidas
+		    element.xpath('cbc:LineExtensionAmount','cbc' => cbc).text + "|" + # Valor de venta por ITEM
+		    element.xpath('cac:Item/cac:SellersItemIdentification/cbc:ID', 'cac' => cac,'cbc' => cbc).text + "|" + # Codigo del Item
+		    # Tipo de precio de venta
+		    element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceTypeCode', 'cac' => cac,'cbc' => cbc).text + "|" + 
+		    element.xpath('cac:Price/cbc:PriceAmount','cac' => cac,'cbc' => cbc).text + "|" + # Valor de venta unitario x item
+		    element.xpath('cbc:LineExtensionAmount','cac' => cac,'cbc' => cbc).text + "|" + # Valor de venta por ITEM
+		    # Número de lote   
+		    element.xpath('cac:Item/cac:ItemInstance/cac:LotIdentification/cbc:LotNumberID','cac' => cac,'cbc' => cbc).text +  colum + 
+		    element.xpath('cac:BrandName','cac' => cac,'cbc' => cbc).text +  colum + # Marca
+		    element.xpath('cac:OriginCountry','cac' => cac,'cbc' => cbc).text +  colum + # Pais de origen
+		    # Nª de Posicion que el Item comprado tiene en la Orden de Compra
+		    element.xpath('cac:OrderLineReference/cbc:LineID','cac' => cac,'cbc' => cbc).text  
+		    strtrama = strtrama + "<br>"
+                    
+              #DESCRIPCION DEL ITEM DEDI 
+		    element.xpath("cac:Item", 'cac' => cac  ).each do |item|
+		          strtrama = strtrama + "<b>DEDI|</b>" +
+                          item.xpath('cbc:Description','cbc' => cbc).text + "|" +  
+		          item.xpath('cbc:AdditionalInformation','cac' => cac,'cbc' => cbc).text + "|" +   # Notas complementarias a descripcion del Item
+		          item.xpath('cac:AdditionalItemProperty/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +   # Nombre del Concepto (Informacion adicional - Gastos art 37 Renta)
+                          item.xpath('cac:AdditionalItemProperty/cbc:NameCode','cac' => cac,'cbc' => cbc).text + "|" +   # Codigo del Concepto (Informacion adicional - Gastos art 37 Renta)
+                          item.xpath('cac:AdditionalItemProperty/cbc:Value','cac' => cac,'cbc' => cbc).text + "|" +   # Numero de Placa (Informacion adicional - Gastos art 37 Renta)
+			  item.xpath('cac:CommodityClassification/cbc:ItemClassificationCode','cac' => cac,'cbc' => cbc).text + "|" +   #Codigo de Producto de SUNAT
+                          item.xpath('cac:StandardItemIdentification/cbc:ID','cac' => cac,'cbc' => cbc).text + "|"    #Codigo de Producto GS1
+                          
+
+		          strtrama = strtrama + "<br>"
+		    end
+
+                #DESCUENTOS Y RECARGOS DEL ITEM DEDR
+		     element.xpath("cac:AllowanceCharge", 'cac' => cac ).each do |itemcharge|
+		         strtrama = strtrama + "<b>DEDR|</b>" +
+		         itemcharge.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Indicador de Tipo
+		         itemcharge.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|" +   # Monto Descuento o Recargo
+			 itemcharge.xpath('cbc:AllowanceChargeReasonCode','cac' => cac,'cbc' => cbc).text + "|" +   # Codigo de Cargo Descuento
+			 itemcharge.xpath('cbc:MultiplierFactorNumeric','cac' => cac,'cbc' => cbc).text + "|" +   # Factor de cargo/descuento
+			 itemcharge.xpath('cbc:BaseAmount','cac' => cac,'cbc' => cbc).text + "|" +   # Monto Base del Descuento o Recargo
+                              
+		         strtrama = strtrama + "<br>"
+		     end
+		   #IMPUESTOS DEL ITEM DEIM 
+			element.xpath("cac:TaxTotal", 'cac' => cac  ).each do |itemtax|
+			    strtrama = strtrama + "<b>DEIM|</b>" +
+			    itemtax.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
+			    # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
+			    itemtax.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
+			    # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)
+			    itemtax.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
+			    itemtax.xpath('cac:TaxSubtotal/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
+			    itemtax.xpath('cac:TaxSubtotal/cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
+			    # AfectaciÛn del IGV
+			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
+			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange','cac' => cac,'cbc' => cbc).text + "|" + # Sistema de ISC
+			    # IdentificaciÛn del tributo
+			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
+		            # Nombre del Tributo
+			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +
+			    # CÛdigo del Tipo de Tributos
+			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+			    strtrama = strtrama + "<br>"
+			end
+
+		   #INFORMACION ADICIONAL A NIVEL DE ITEM - CASTOS INTERESES HIPOTECARIOS PRIMERA VIVIENDA
+		       element.xpath('cac:Item/cac:ItemSpecificationDocumentReference' , 'cac' => cac  ).each do |itemdocreference|
+		       
+		          strtrama = strtrama + "<b>DEGH|</b>" +
+		          itemdocreference.xpath('cbc:ID','cbc' => cbc).text + "|" + # N de Contrato
+		          itemdocreference.xpath('cbc:IssueDate','cbc' => cbc).text + "|"   # Fecha de Otorgamiento del credito
+
+		         element.xpath("cac:Item/cac:AdditionalItemProperty", 'cac' => cac).each do |itemproperty|
+
+		            strtrama = strtrama +
+
+		               (itemproperty.xpath('cbc:Name', 'cbc' => cbc).text).to_s + "|" + # Tipo de Prestamo - Descripcion   
+		                itemproperty('cbc:NameCode', 'cbc' => cbc).text + "|" + # Tipo de Prestamo - Codigo de Tipo de Prestamo 
+		             
+		               (itemproperty.xpath('cbc:Value', 'cbc' => cbc).text).to_s + "|"  # Tipo de Prestamo - Descripcion   
+
+		          end
+		          strtrama = strtrama + "<br>"
+		        end   
+
+
+
+
+                end
 
 
 	
