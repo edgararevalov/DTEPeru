@@ -164,11 +164,22 @@ class DataFile < ActiveRecord::Base
 
 	xml_doc.xpath('//cac:OrderReference/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Orden de Compra
 
-	xml_doc.xpath('//cac:ContractDocumentReference/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Número de contrato
+	xml_doc.xpath('//cac:ContractDocumentReference/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum  # Número de contrato
+ 
 
 
-	xml_doc.xpath('//cbc:Note' , 'cac' => cac, 'cbc' => cbc).text + colum + # Nota general del documento
 
+       xml_doc.xpath("//cbc:Note", 'cbc' => cbc  ).each do |element| 
+
+                    if element.parent.name ==strroot 
+
+		           strtrama = strtrama + element.text + "|" 		         
+		           
+                     end
+
+	 end  
+
+      strtrama = strtrama +
 
 	xml_doc.xpath('//cac:Shipment/cbc:InsuranceValueAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Valor del seguro
 
@@ -820,6 +831,18 @@ class DataFile < ActiveRecord::Base
 		               (itemproperty.xpath('cbc:Value', 'cbc' => cbc).text).to_s + "|"  # Tipo de Prestamo - Descripcion   
 
 		          end
+                         element.xpath("cac:OriginAddress", 'cac' => cac  ).each do |itemPredio|
+
+                             strtrama = strtrama + itemPredio("cbc:StreetName" , 'cbc' => cbc).text + "|" +   #Direccion Predio
+                             itemPredio("cbc:CitySubdivisionName" , 'cbc' => cbc).text + "|" +   #Direccion Predio Urbanizacion
+                             itemPredio("cbc:CityName" , 'cbc' => cbc).text + "|" +   #Direccion Predio Provincia
+                             itemPredio("cbc:CountrySubentity" , 'cbc' => cbc).text + "|" +   #Direccion Predio Departamento
+                             itemPredio("cbc:District" , 'cbc' => cbc).text + "|"    #Direccion Predio Distrito
+
+                         end  
+
+
+
 		          strtrama = strtrama + "<br>"
 		        end   
 
@@ -827,6 +850,141 @@ class DataFile < ActiveRecord::Base
 
 
                 end
+
+		 #IMPUESTOS GLOBALES
+		    xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+
+		       if element.parent.name != parentline
+		           strtrama = strtrama + "<b>DI|</b>" +
+		         element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Sumatoria Tributo (IGV+ISC+ Otros)
+		         # Sumatoria por Tributo (IGV,ISC, Otros)
+		        element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
+		         # Identificación del tributo
+		        element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+		         # Nombre del Tributo
+		       element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + 
+		         # Código del Tipo de Tributov            
+		       element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" +
+		         # Monto Base            
+		       element.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" 
+
+
+		         strtrama = strtrama + "<br>"
+		       end
+		    end
+
+		 #NC ND REFERENCIAS A FACTURAS 
+		    xml_doc.xpath("//cac:InvoiceDocumentReference", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+		           strtrama = strtrama + "<b>RE|</b>" +
+		           # Serie y número del documento que modifica (Factura)
+		           element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+		           #Fecha de emisión
+		           element.xpath('cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|" + 
+		           #Tipo de documento del documento que modifica (Factura)
+		           element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" +     
+		           #(Tipo de documento - Catálogo No. 12)
+		           element.xpath('cbc:DocumentType','cac' => cac,'cbc' => cbc).text      
+		           strtrama = strtrama + "<br>"
+		    end    
+
+	     #REFERENCIAS A GUIAS  
+		    xml_doc.xpath("//cac:DespatchDocumentReference", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+		           strtrama = strtrama + "<b>RE|</b>" + "|" + "|" + "|" +
+		           # En el caso de Guías de Remisión Número de guía: serie - número de documento
+		           element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+		           #En el caso de Guías de Remisión Tipo de Documento
+		           element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+		           strtrama = strtrama + "<br>"
+		    end  
+
+	     #REFERENCIAS A OTROS DOCUMENTOS   
+		    xml_doc.xpath("//cac:AdditionalDocumentReference", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+		           strtrama = strtrama + "<b>RE|</b>" +
+		           # Serie y número del documento que referencia la factura
+		           element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+		           #Fecha de emisión
+		           element.xpath('cbc:IssueDate','cac' => cac,'cbc' => cbc).text + "|" + 
+		           #Tipo de documento del documento que modifica (Factura)
+		           element.xpath('cbc:DocumentTypeCode','cac' => cac,'cbc' => cbc).text + "|" +
+                           #Descripcion del tipo de Documento UN 1001
+		           element.xpath('cbc:DocumentType','cac' => cac,'cbc' => cbc).text + "|" 
+
+		           strtrama = strtrama + "<br>"
+		    end  
+
+	     #Descuentos y Recargos Globales   
+		    xml_doc.xpath("//cac:AllowanceCharge", 'cac' => cac).each do |element| 
+		           if element.parent.name    != parentline
+
+				   strtrama = strtrama + "<b>DR|</b>" +
+				   # Tipo de Movimiento D/R
+				   element.xpath('cbc:ChargeIndicator','cbc' => cbc).text + "|" + 
+				   #Código Motivo D/R
+				   element.xpath('cbc:AllowanceChargeReasonCode','cbc' => cbc).text + "|" + 
+				   #TGlosa D/R
+				   element.xpath('cbc:AllowanceChargeReason','cac' => cac,'cbc' => cbc).text + "|" +  
+				   #Moneda
+				   element.xpath('cbc:Amount [@currencyID]','cac' => cac,'cbc' => cbc).attribute('currencyID') + "|" +  
+				   #Monto D/R
+				   element.xpath('cbc:Amount','cbc' => cbc).text + "|" +  
+				   #Identificación Tributo
+				   element.xpath('cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +  
+				   #Nombre del Tributo
+				   element.xpath('cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +  
+				   #Código Tipo de Tributo
+				   element.xpath('cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" +  
+				   #Factor
+				   element.xpath('cbc:MultiplierFactorNumeric','cac' => cac,'cbc' => cbc).text + "|" +  
+				   #Monto Base
+				   element.xpath('cbc:BaseAmount','cac' => cac,'cbc' => cbc).text + "|"  
+
+				   strtrama = strtrama + "<br>"
+		          end
+		    end  
+
+	 #ANTICIPOS Y PREPAGOS   
+		   
+		    xml_doc.xpath("//cac:PrepaidPayment", 'cac' => cac,'cbc' => cbc  ).each do |element| 
+		           strtrama = strtrama + "<b>PP|</b>" +
+		           # ID del Anticipo
+		           element.xpath('cbc:ID','cbc' => cbc).text + "|" +
+		           # Monto del PrePago
+		           element.xpath('cbc:PaidAmount','cbc' => cbc).text + "|" +
+		           
+		           # Fecha de recepción
+		           element.xpath('cbc:ReceivedDate','cac' => cac,'cbc' => cbc).text + "|" + 
+		           #Fecha de Pago
+		           element.xpath('cbc:PaidDate','cac' => cac,'cbc' => cbc).text + "|"  + 
+		           #Hora de Pago
+		           " " +  "|"  + 
+			   #Tipo de Documento (tipo de comprobante que se realizo el anticipo)
+                          #xml_doc.xpath('//Invoice/cac:PaymentTerms/cbc:PaymentMeansID  ' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Código del Bien o Servicio Sujeto a Detracción
+			   #Serie y correlativo del emisor del anticipo (tipo de comprobante que se realizo el anticipo)
+                          
+		          element.xpath('cbc:ID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') + "|" + 
+			   #Serie - Correlativo 
+		          element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+			   #Tipo de Documento de Identidad del Emisor del Anticipo
+		          element.xpath('cbc:InstructionID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') + "|" + 
+			  #Numero de Identidad del Emisor del Anticipo
+		          element.xpath('cbc:InstructionID','cac' => cac,'cbc' => cbc).text + "|" 
+
+		                          
+		           strtrama = strtrama + "<br>"
+		    end  
+
+#CAMPOS PERSONALIZADOS 
+
+		    xml_doc.xpath("//CustomText/Text").each do |element|
+		           strtrama = strtrama + "<b>PE|</b>" + element.attribute('name') + "|" + element.text + "|" + "<br>"
+		     end
+
+		    xml_doc.xpath("//CustomText/Section").each do |section|
+		            strtrama = strtrama + "<b>PES|</b>" + section.attribute('name') + "<br>"
+		             section.xpath('Detail').each do  |detail|
+		                strtrama = strtrama + "<b>PESD|</b>" + detail.xpath('Value')[0].text  + "|" + detail.xpath('Value')[1].text + "<br>"
+		             end 
+		     end
 
 
 	
