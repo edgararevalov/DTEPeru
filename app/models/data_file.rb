@@ -551,7 +551,7 @@ class DataFile < ActiveRecord::Base
             else
 	       strcpe = "//cac:DebitNoteLine"
 	       strquantity = "cbc:DebitedQuantity"
-	       parentline = "DebitedQuantity" 
+	       parentline = "DebitNoteLine" 
 	       strroot = "DebitNote"
             end
 	
