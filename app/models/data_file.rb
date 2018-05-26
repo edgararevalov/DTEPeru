@@ -46,11 +46,16 @@ class DataFile < ActiveRecord::Base
        strquantity = "cbc:InvoicedQuantity"
        parentline = "InvoiceLine"    
        strroot = "Invoice" 
-    else 
+    elsif tipocpe =="07" 
        strcpe = "//cac:CreditNoteLine"
        strquantity = "cbc:CreditedQuantity"
        parentline = "CreditNoteLine" 
        strroot = "CreditNote"
+    else
+       strcpe = "//cac:DebitNoteLine"
+       strquantity = "cbc:DebitedQuantity"
+       parentline = "DebitNoteLine" 
+       strroot = "DebitNote"
     end
 
 #VERSION DEL UBL 
@@ -538,14 +543,19 @@ class DataFile < ActiveRecord::Base
 	       strquantity = "cbc:InvoicedQuantity"
 	       parentline = "InvoiceLine"    
 	       strroot = "Invoice" 
-	    else 
+	    elsif  tipocpe == "07"
 	       strcpe = "//cac:CreditNoteLine"
 	       strquantity = "cbc:CreditedQuantity"
 	       parentline = "CreditNoteLine" 
 	       strroot = "CreditNote"
-	    end
-
-	   strtrama =  "<b>UBLVERSION|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum   #UBL VERSION
+            else
+	       strcpe = "//cac:DebitNoteLine"
+	       strquantity = "cbc:DebitedQuantity"
+	       parentline = "DebitedQuantity" 
+	       strroot = "DebitNote"
+            end
+	
+           strtrama =  "<b>UBLVERSION|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum   #UBL VERSION
 	   strtrama = strtrama + "<b>CustomizationID|</b>" + xml_doc.xpath('//cbc:CustomizationID', 'cbc' => cbc).text  #CustomizationID 
 	   strtrama = strtrama + "<br>"
 
