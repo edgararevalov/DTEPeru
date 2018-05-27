@@ -118,41 +118,52 @@ class DataFile < ActiveRecord::Base
 	    xml_doc.xpath('//cac:AccountingCustomerParty/cbc:AdditionalAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum +  
 	    xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode' , 'cac' => cac, 'cbc' => cbc).text + colum +  # Codigo del pais emisor
 	    xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName' , 'cac' => cac, 'cbc' => cbc).text + colum +   # Urbanización Emisor
+            #Dirección del Punto de Partida, Código de Ubigeo
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:ID' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + #Dirección del Punto de Partida, Código de Ubigeo
+    	    xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:ID' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
+            #Dirección del Punto de Partida, Dirección completa y detallada  
+  	    xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:StreetName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum  +      
+	    #Dirección del Punto de Partida, Urbanización
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:CitySubdivisionName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum  + 
 
+	   #Dirección del Punto de Partida, Provincia
+	   xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:CityName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:StreetName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum  +      #Dirección del Punto de Partida, Dirección completa y detallada
-	   
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:CitySubdivisionName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum  + #Dirección del Punto de Partida, Urbanización
+	   #Dirección del Punto de Partida, Departamento
+	  xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:CountrySubentity' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
+         
+	    #Dirección del Punto de Partida, Distrito
+	   xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:District' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:CityName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + #Dirección del Punto de Partida, Provincia
+           #Dirección del Punto de Partida, Código de País
+	   xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cac:Country/cbc:IdentificationCode' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:CountrySubentity' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + #Dirección del Punto de Partida, Departamento
+      #Dirección del Punto de Llegada, Código de Ubigeo
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:ID' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cbc:District' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + #Dirección del Punto de Partida, Distrito
+      # Dirección del Punto de Llegada, Dirección completa y detallada
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:StreetName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
+      # Dirección del Punto de Llegada, Urbanización
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:CitySubdivisionName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:OriginAddress/cac:Country/cbc:IdentificationCode' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + #Dirección del Punto de Partida, Código de País
+       # Dirección del Punto de Llegada, Provincia
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:CityName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:ID' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + #Dirección del Punto de Llegada, Código de Ubigeo
+        # Dirección del Punto de Llegada, Departamento 
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:CountrySubentity' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
+        # Dirección del Punto de Llegada, Distrito
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:District' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:StreetName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Dirección del Punto de Llegada, Dirección completa y detallada
-
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:CitySubdivisionName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Dirección del Punto de Llegada, Urbanización
-
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:CityName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Dirección del Punto de Llegada, Provincia
-
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:CountrySubentity' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Dirección del Punto de Llegada, Departamento
-
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cbc:District' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Dirección del Punto de Llegada, Distrito
-
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cac:Country/cbc:IdentificationCode' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum +  # Dirección del Punto de Llegada, Código de País
+        # Dirección del Punto de Llegada, Código de País
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/cac:DeliveryAddress/cac:Country/cbc:IdentificationCode' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum +  
 
 	xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/sac:SUNATRoadTransport/cbc:LicensePlateID' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Placa del Vehiculo
 
-	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/sac:SUNATRoadTransport/cbc:TransportAuthorizationCode' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # N° constancia de inscripción del vehículo o certificado de habilitacion vehicular
+       # N° constancia de inscripción del vehículo o certificado de habilitacion vehicular
+
+	xml_doc.xpath('//sac:AdditionalInformation/sac:SUNATEmbededDespatchAdvice/sac:SUNATRoadTransport/cbc:TransportAuthorizationCode' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
 	xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/sac:SUNATRoadTransport/cbc:BrandName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Marca Vehículo
 
@@ -162,8 +173,9 @@ class DataFile < ActiveRecord::Base
 
 	xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/sac:SUNATCarrierParty/cbc:CustomerAssignedAccountID' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Ruc transportista -Tipo Documento
 
-	xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/sac:SUNATCarrierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + # Razón social del transportista
+	# Razón social del transportista
 
+       xml_doc.xpath('//sac:SUNATEmbededDespatchAdvice/sac:SUNATCarrierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'sac' => sac, 'cac' => cac, 'cbc' => cbc).text + colum + 
 
 	xml_doc.xpath('//cac:PaymentTerms/cbc:Note' , 'cac' => cac, 'cbc' => cbc).text + colum + # Condiciones de pago
 
@@ -172,9 +184,9 @@ class DataFile < ActiveRecord::Base
 	xml_doc.xpath('//cac:ContractDocumentReference/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum  # Número de contrato
  
 
-
-
-       xml_doc.xpath("//cbc:Note", 'cbc' => cbc  ).each do |element| 
+        #NOTAS DEL DOCUMENTO SECCION EN
+    
+        xml_doc.xpath("//cbc:Note", 'cbc' => cbc  ).each do |element| 
 
                     if element.parent.name ==strroot 
 
@@ -182,7 +194,7 @@ class DataFile < ActiveRecord::Base
 		           
                      end
 
-	 end  
+	  end  
 
       strtrama = strtrama +
 
@@ -618,7 +630,13 @@ class DataFile < ActiveRecord::Base
  	 #ENCABEZADO EXTENSION
 	  strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>ENEX|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum +  #Version del UBL
-	  xml_doc.xpath("//cbc:InvoiceTypeCode [@listID]",'cbc' => cbc ).attribute('listID') + colum +  #Tipo de Operacion
+           if tipocpe == "01" || tipocpe == "03"
+  	       xml_doc.xpath("//cbc:InvoiceTypeCode [@listID]",'cbc' => cbc ).attribute('listID') + colum   #Tipo de Operacion
+           else
+              "" + colum
+           end 
+          strtrama = strtrama +
+
 	  xml_doc.xpath("//cac:OrderReference/cbc:ID",'cac' => cac,'cbc' => cbc ).text + colum +  #Orden de Compra
           xml_doc.xpath("//cac:LegalMonetaryTotal/cbc:PayableRoundingAmount",'cac' => cac,'cbc' => cbc ).text + colum +  #Redondedo
           xml_doc.xpath("//cac:LegalMonetaryTotal/cbc:PrepaidAmount",'cac' => cac,'cbc' => cbc ).text + colum +  #Total Anticipos
@@ -685,7 +703,8 @@ class DataFile < ActiveRecord::Base
        end
      
      #VENTA ITENERANTE
-	  strtrama = strtrama + "<br>"
+
+          strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>VITE|</b>" +
        # Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de ubigeo - Catálogo No. 13)
        xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:ID ' ,'cac' => cac, 'cbc' =>     cbc).text + colum +  
