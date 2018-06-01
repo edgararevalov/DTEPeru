@@ -630,8 +630,9 @@ class DataFile < ActiveRecord::Base
  	 #ENCABEZADO EXTENSION
 	  strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>ENEX|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum +  #Version del UBL
+
            if tipocpe == "01" || tipocpe == "03"
-  	       xml_doc.xpath("//cbc:InvoiceTypeCode [@listID]",'cbc' => cbc ).attribute('listID') + colum   #Tipo de Operacion
+  	       xml_doc.xpath("//cbc:InvoiceTypeCode [@listID]",'cbc' => cbc ).attribute('listID').to_s + colum   #Tipo de Operacion
            else
               "" + colum
            end 
