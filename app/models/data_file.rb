@@ -628,7 +628,7 @@ class DataFile < ActiveRecord::Base
             #Codigo del pais del Emisor
             xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:IdentificationCode' ,'cac' => cac, 'cbc' => cbc).text + colum  
             #Urbanizacion del Emisor
-            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' =>      cbc).text + colum  
 
  	 #ENCABEZADO EXTENSION
 	  strtrama = strtrama + "<br>"
@@ -648,11 +648,8 @@ class DataFile < ActiveRecord::Base
           xml_doc.xpath("//cbc:IssueTime",'cbc' => cbc ).text + colum +  #Hora de Emision
           #Codigo Asignado por SUNAT para el establecimiento Anexo
           xml_doc.xpath("//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode" , 'cac' => cac, 'cbc' => cbc ).text + colum +  
-          xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Total Precio de Venta
-          xml_doc.xpath('//cac:AllowanceCharge/cbc:ChargeIndicator' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Indicador de Cargo
-          xml_doc.xpath('//cac:AllowanceCharge/cbc:AllowanceChargeReasonCode' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Codigo del motivo del cargo
-          xml_doc.xpath('//cac:AllowanceCharge/cbc:Amount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Monto del cargo
-          xml_doc.xpath('//cac:AllowanceCharge/cbc:BaseAmount' , 'cac' => cac, 'cbc' => cbc).text + colum   #FISE Monto base del cargo
+          xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum  # Total Precio de Venta
+          
 
          #FACTURA GUIA
 	  strtrama = strtrama + "<br>"
@@ -820,7 +817,7 @@ class DataFile < ActiveRecord::Base
 		         itemcharge.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|" +   # Monto Descuento o Recargo
 			 itemcharge.xpath('cbc:AllowanceChargeReasonCode','cac' => cac,'cbc' => cbc).text + "|" +   # Codigo de Cargo Descuento
 			 itemcharge.xpath('cbc:MultiplierFactorNumeric','cac' => cac,'cbc' => cbc).text + "|" +   # Factor de cargo/descuento
-			 itemcharge.xpath('cbc:BaseAmount','cac' => cac,'cbc' => cbc).text + "|" +   # Monto Base del Descuento o Recargo
+			 itemcharge.xpath('cbc:BaseAmount','cac' => cac,'cbc' => cbc).text + "|"    # Monto Base del Descuento o Recargo
                               
 		         strtrama = strtrama + "<br>"
 		     end
