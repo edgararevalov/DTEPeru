@@ -623,9 +623,12 @@ class DataFile < ActiveRecord::Base
             ""+colum + # /codigos de otros conceptos tributarios recomendados
 	    ""+colum + # Total de Valor Venta Neto
             xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + # Numero de documento de identidad del adquiriente o usuario
-	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).text + colum + #Tipo de identidad del adquiriente o usuario
+	    #Tipo de identidad del adquiriente o usuario
+            xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum + 
             #Codigo del pais del Emisor
-            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Country/cbc:IdentificationCode' ,'cac' => cac, 'cbc' => cbc).text + colum  
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:IdentificationCode' ,'cac' => cac, 'cbc' => cbc).text + colum  
+            #Urbanizacion del Emisor
+            xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
 
  	 #ENCABEZADO EXTENSION
 	  strtrama = strtrama + "<br>"
@@ -644,7 +647,7 @@ class DataFile < ActiveRecord::Base
           xml_doc.xpath("//cac:Invoice/cbc:DueDate",'cac' => cac,'cbc' => cbc ).text + colum +  #Fecha de Vencimiento de la Factura
           xml_doc.xpath("//cbc:IssueTime",'cbc' => cbc ).text + colum +  #Hora de Emision
           #Codigo Asignado por SUNAT para el establecimiento Anexo
-          xml_doc.xpath("//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode" , 'cac' => cac, 'cbc' => cbc ).text + colum +  
+          xml_doc.xpath("//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode" , 'cac' => cac, 'cbc' => cbc ).text + colum +  
           xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Total Precio de Venta
           xml_doc.xpath('//cac:AllowanceCharge/cbc:ChargeIndicator' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Indicador de Cargo
           xml_doc.xpath('//cac:AllowanceCharge/cbc:AllowanceChargeReasonCode' , 'cac' => cac, 'cbc' => cbc).text + colum +  #FISE Codigo del motivo del cargo
@@ -654,8 +657,7 @@ class DataFile < ActiveRecord::Base
          #FACTURA GUIA
 	  strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>FGA|</b>" +
-          #Urbanizacion del Emisor
-          xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+         
           xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum  +  #   Dirección del Punto de Partida, 
            #   Dirección del Punto de Partida, Dirección completa y detallada
           xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:OriginAddress/cac:AddressLine/cbc:Line' ,'cac' => cac, 'cbc' =>      cbc).text + colum +  
