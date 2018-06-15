@@ -538,6 +538,7 @@ class DataFile < ActiveRecord::Base
 	    xml = File.new(xmlfiles)
 
 	    xml_doc = Nokogiri::XML(xml)
+            itemproperty = Nokogiri::Slop(xml)
 
 	    # Awesome this works!
 
@@ -792,23 +793,32 @@ class DataFile < ActiveRecord::Base
 		    element.xpath('cac:BrandName','cac' => cac,'cbc' => cbc).text +  colum + # Marca
 		    element.xpath('cac:OriginCountry','cac' => cac,'cbc' => cbc).text +  colum + # Pais de origen
 		    # Nª de Posicion que el Item comprado tiene en la Orden de Compra
-		    element.xpath('cac:OrderLineReference/cbc:LineID','cac' => cac,'cbc' => cbc).text  
-		    strtrama = strtrama + "<br>"
+		    element.xpath('cac:OrderLineReference/cbc:LineID','cac' => cac,'cbc' => cbc).text  + "|"
+		    strtrama = strtrama 
                     
+                     
               #DESCRIPCION DEL ITEM DEDI 
-		    element.xpath("cac:Item", 'cac' => cac  ).each do |item|
-		          strtrama = strtrama + "<b>DEDI|</b>" +
-                          item.xpath('cbc:Description','cbc' => cbc).text + "|" +  
-		          item.xpath('cbc:AdditionalInformation','cac' => cac,'cbc' => cbc).text + "|" +   # Notas complementarias a descripcion del Item
-		          item.xpath('cac:AdditionalItemProperty/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +   # Nombre del Concepto (Informacion adicional - Gastos art 37 Renta)
-                          item.xpath('cac:AdditionalItemProperty/cbc:NameCode','cac' => cac,'cbc' => cbc).text + "|" +   # Codigo del Concepto (Informacion adicional - Gastos art 37 Renta)
-                          item.xpath('cac:AdditionalItemProperty/cbc:Value','cac' => cac,'cbc' => cbc).text + "|" +   # Numero de Placa (Informacion adicional - Gastos art 37 Renta)
-			  item.xpath('cac:CommodityClassification/cbc:ItemClassificationCode','cac' => cac,'cbc' => cbc).text + "|" +   #Codigo de Producto de SUNAT
-                          item.xpath('cac:StandardItemIdentification/cbc:ID','cac' => cac,'cbc' => cbc).text + "|"    #Codigo de Producto GS1
-                          
 
-		          strtrama = strtrama + "<br>"
+                   contador = 1
+		    element.xpath("cac:Item/cbc:Description", 'cac' => cac,'cbc' => cbc ).each do |item|
+		          strtrama = strtrama + "<br>" + "<b>DEDI|</b>" +
+                         # item.xpath('cbc:Description','cbc' => cbc).text + "|" + 
+                          item.text +  "|" + " " +  "|" 
+ 
+                         
+                          if contador < 2
+                             strtrama = strtrama +
+                             itemadditionalproperty(xml_doc,"7000","cbc:Name").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7000","cbc:NameCode").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7000","cbc:Value").to_s    
+                          else
+                             strtrama = strtrama + colum + colum + colum
+                          end
+                        
+                         contador += 1                         
+      	      
 		    end
+                     strtrama = strtrama + "<br>"
 
                 #DESCUENTOS Y RECARGOS DEL ITEM DEDR
 		     element.xpath("cac:AllowanceCharge", 'cac' => cac ).each do |itemcharge|
@@ -844,37 +854,40 @@ class DataFile < ActiveRecord::Base
 			end
 
 		   #INFORMACION ADICIONAL A NIVEL DE ITEM - CASTOS INTERESES HIPOTECARIOS PRIMERA VIVIENDA
-		       element.xpath('cac:Item/cac:ItemSpecificationDocumentReference' , 'cac' => cac  ).each do |itemdocreference|
+		      
 		       
-		          strtrama = strtrama + "<b>DEGH|</b>" +
-		          itemdocreference.xpath('cbc:ID','cbc' => cbc).text + "|" + # N de Contrato
-		          itemdocreference.xpath('cbc:IssueDate','cbc' => cbc).text + "|"   # Fecha de Otorgamiento del credito
+		      strtrama = strtrama + "<b>DEGH|</b>" +    
 
-		         element.xpath("cac:Item/cac:AdditionalItemProperty", 'cac' => cac).each do |itemproperty|
+                             itemadditionalproperty(xml_doc,"7004","cbc:Name").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7004","cbc:NameCode").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7004","cbc:Value").to_s    + colum +
 
-		            strtrama = strtrama +
+                             itemadditionalproperty(xml_doc,"7005","cbc:Name").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7005","cbc:NameCode").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7005","cbc:Value").to_s    + colum +
 
-		               (itemproperty.xpath('cbc:Name', 'cbc' => cbc).text).to_s + "|" + # Tipo de Prestamo - Descripcion   
-		                itemproperty('cbc:NameCode', 'cbc' => cbc).text + "|" + # Tipo de Prestamo - Codigo de Tipo de Prestamo 
-		             
-		               (itemproperty.xpath('cbc:Value', 'cbc' => cbc).text).to_s + "|"  # Tipo de Prestamo - Descripcion   
 
-		          end
-                         element.xpath("cac:OriginAddress", 'cac' => cac  ).each do |itemPredio|
+                             itemadditionalproperty(xml_doc,"7001","cbc:Name").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7001","cbc:NameCode").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7001","cbc:Value").to_s    + colum +
 
-                             strtrama = strtrama + itemPredio("cbc:StreetName" , 'cbc' => cbc).text + "|" +   #Direccion Predio
-                             itemPredio("cbc:CitySubdivisionName" , 'cbc' => cbc).text + "|" +   #Direccion Predio Urbanizacion
-                             itemPredio("cbc:CityName" , 'cbc' => cbc).text + "|" +   #Direccion Predio Provincia
-                             itemPredio("cbc:CountrySubentity" , 'cbc' => cbc).text + "|" +   #Direccion Predio Departamento
-                             itemPredio("cbc:District" , 'cbc' => cbc).text + "|"    #Direccion Predio Distrito
+                             itemadditionalproperty(xml_doc,"7003","cbc:Name").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7003","cbc:NameCode").to_s    + colum +
+                             itemadditionalproperty(xml_doc,"7003","cbc:Value").to_s    + colum +
 
-                         end  
+
+      
+                             xml_doc.xpath("//cac:OriginAddress/cbc:StreetName" ,'cac' => cac, 'cbc' => cbc).text + "|" +   #Direccion Predio
+                             xml_doc.xpath("//cac:OriginAddress/cbc:CitySubdivisionName" , 'cac' => cac,'cbc' => cbc).text + "|" +   #Direccion Predio Urbanizacion
+                             xml_doc.xpath("//cac:OriginAddress/cbc:CityName" ,'cac' => cac, 'cbc' => cbc).text + "|" +   #Direccion Predio Provincia
+                             xml_doc.xpath("//cac:OriginAddress/cbc:CountrySubentity" ,'cac' => cac, 'cbc' => cbc).text + "|" +   #Direccion Predio Departamento
+                             xml_doc.xpath("//cac:OriginAddress/cbc:District" , 'cac' => cac,'cbc' => cbc).text + "|"    #Direccion Predio Distrito
+
 
 
 
 		          strtrama = strtrama + "<br>"
-		        end   
-
+		        
 
 
 
@@ -1021,6 +1034,23 @@ class DataFile < ActiveRecord::Base
         return strtrama
          
    end
+
+    def itemadditionalproperty(itematributo,code,atributo)
+           valor=""
+     cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+     cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+
+      itematributo.xpath("//cac:Item/cac:AdditionalItemProperty", 'cac' => cac,'cbc' => cbc  ).each do |aditionalitem|
+              
+              if  aditionalitem.xpath('cbc:NameCode').text == code
+                  valor = aditionalitem.xpath(atributo,'cbc' => cbc).text
+              end    
+
+      end
+         return valor
+
+    end
+
 
     def retornartrama(nombre)
         strtrama = "Hola Mundo soy " + nombre
