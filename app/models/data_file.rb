@@ -841,7 +841,7 @@ class DataFile < ActiveRecord::Base
 			    itemtaxsubt.xpath('cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
 			    # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)
 			    itemtaxsubt.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
-			    itemtaxsubt.xpath('cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
+			    itemtaxsubt.xpath('cac:TaxCategory/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
 			    itemtaxsubt.xpath('cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
 			    # AfectaciÛn del IGV
 			    itemtaxsubt.xpath('cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
