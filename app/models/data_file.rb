@@ -833,24 +833,28 @@ class DataFile < ActiveRecord::Base
 		     end
 		   #IMPUESTOS DEL ITEM DEIM 
 			element.xpath("cac:TaxTotal", 'cac' => cac  ).each do |itemtax|
+                          itemtax.xpath('cac:TaxSubtotal', 'cac' => cac  ).each do |itemtaxsubt|
+
 			    strtrama = strtrama + "<b>DEIM|</b>" +
 			    itemtax.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
 			    # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
-			    itemtax.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
+			    itemtaxsubt.xpath('cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
 			    # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)
-			    itemtax.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
-			    itemtax.xpath('cac:TaxSubtotal/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
-			    itemtax.xpath('cac:TaxSubtotal/cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
+			    itemtaxsubt.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
+			    itemtaxsubt.xpath('cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
+			    itemtaxsubt.xpath('cbc:TaxCategory/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + # Tipo de Impuesto
 			    # AfectaciÛn del IGV
-			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
-			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange','cac' => cac,'cbc' => cbc).text + "|" + # Sistema de ISC
+			    itemtaxsubt.xpath('cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
+			    itemtaxsubt.xpath('cac:TaxCategory/cbc:TierRange','cac' => cac,'cbc' => cbc).text + "|" + # Sistema de ISC
 			    # IdentificaciÛn del tributo
-			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
+			    itemtaxsubt.xpath('cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
 		            # Nombre del Tributo
-			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +
+			    itemtaxsubt.xpath('cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +
 			    # CÛdigo del Tipo de Tributos
-			    itemtax.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+			    itemtaxsubt.xpath('cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
 			    strtrama = strtrama + "<br>"
+                          end         
+
 			end
 
 		   #INFORMACION ADICIONAL A NIVEL DE ITEM - CASTOS INTERESES HIPOTECARIOS PRIMERA VIVIENDA
@@ -897,21 +901,33 @@ class DataFile < ActiveRecord::Base
 		    xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
 
 		       if element.parent.name != parentline
-		           strtrama = strtrama + "<b>DI|</b>" +
-		         element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Sumatoria Tributo (IGV+ISC+ Otros)
-		         # Sumatoria por Tributo (IGV,ISC, Otros)
-		        element.xpath('cac:TaxSubtotal/cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
-		         # Identificación del tributo
-		        element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
-		         # Nombre del Tributo
-		       element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + 
-		         # Código del Tipo de Tributov            
-		       element.xpath('cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" +
-		         # Monto Base            
-		       element.xpath('cac:TaxSubtotal/cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" 
+                           
+       	                  
+                          element.xpath('cac:TaxSubtotal','cac' => cac).each do |subtotal|
 
 
-		         strtrama = strtrama + "<br>"
+                              #   if subtotal.parent.name ==strroot 
+
+				               strtrama = strtrama + "<b>DI|</b>" +
+					       element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Sumatoria Tributo (IGV+ISC+ Otros)
+
+				                # Sumatoria por Tributo (IGV,ISC, Otros)
+					      subtotal.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
+						# Identificación del tributo
+					      subtotal.xpath('cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+					       # Nombre del Tributo
+					     subtotal.xpath('cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + 
+					       # Código del Tipo de Tributov            
+					    subtotal.xpath('cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" +
+					      # Monto Base            
+					    subtotal.xpath('cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" 
+
+				              strtrama = strtrama + "<br>"
+                              # end                              
+                          end 
+                 
+
+		        
 		       end
 		    end
 
