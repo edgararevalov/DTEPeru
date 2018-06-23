@@ -782,9 +782,15 @@ end
                     if element.parent.name ==strroot 
 
 		           strtrama = strtrama +  "<b>DN|</b>" + contador.to_s + "|" + # Número de Línea de Nota
-		           element.attribute('languageLocaleID') + colum +   #   Código de la leyend
+                          begin
+
+		           element.attribute('languageLocaleID') + colum    #   Código de la leyend
+                          rescue
+                             ""+ colum  # /BLANCO
+                          end 
+
 		            #Glosa de la leyenda
-		           element.text + "|" 		         
+		          strtrama = strtrama + element.text + "|" 		         
 		           strtrama = strtrama + "<br>"
                            contador += 1  
                      end
@@ -875,8 +881,8 @@ end
 
 		   #INFORMACION ADICIONAL A NIVEL DE ITEM - CASTOS INTERESES HIPOTECARIOS PRIMERA VIVIENDA
 		      
-		       
-		      strtrama = strtrama + "<b>DEGH|</b>" +    
+		      if itemadditionalproperty(xml_doc,"7004","cbc:Name").to_s != ""  
+                            strtrama = strtrama + "<b>DEGH|</b>" +    
 
                              itemadditionalproperty(xml_doc,"7004","cbc:Name").to_s    + colum +
                              itemadditionalproperty(xml_doc,"7004","cbc:NameCode").to_s    + colum +
@@ -907,7 +913,7 @@ end
 
 
 		          strtrama = strtrama + "<br>"
-		        
+		      end  
 
 
 
@@ -1069,10 +1075,10 @@ end
 
     def itemadditionalproperty(itematributo,code,atributo)
            valor=""
-     cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-     cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+           cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+           cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
 
-      itematributo.xpath("//cac:Item/cac:AdditionalItemProperty", 'cac' => cac,'cbc' => cbc  ).each do |aditionalitem|
+           itematributo.xpath("//cac:Item/cac:AdditionalItemProperty", 'cac' => cac,'cbc' => cbc  ).each do |aditionalitem|
               
               if  aditionalitem.xpath('cbc:NameCode').text == code
                   valor = aditionalitem.xpath(atributo,'cbc' => cbc).text
