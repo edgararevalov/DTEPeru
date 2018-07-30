@@ -784,7 +784,7 @@ end
 		           strtrama = strtrama +  "<b>DN|</b>" + contador.to_s + "|" + # Número de Línea de Nota
                           begin
 
-		           element.attribute('languageLocaleID') + colum    #   Código de la leyend
+		           element.attribute('languageLocaleID').text + colum    #   Código de la leyend
                           rescue
                              ""+ colum  # /BLANCO
                           end 
