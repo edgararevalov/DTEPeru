@@ -901,29 +901,17 @@ end
                              itemadditionalproperty(xml_doc,"7003","cbc:NameCode").to_s    + colum +
                              itemadditionalproperty(xml_doc,"7003","cbc:Value").to_s    + colum +
 
-
-                             itemadditionalproperty(xml_doc,"7006","cbc:Name").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7006","cbc:NameCode").to_s    + colum +
                              itemadditionalproperty(xml_doc,"7006","cbc:Value").to_s    + colum +
-
-                             itemadditionalproperty(xml_doc,"7007","cbc:Name").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7007","cbc:NameCode").to_s    + colum +
+                      
                              itemadditionalproperty(xml_doc,"7007","cbc:Value").to_s    + colum +
-
-                            itemadditionalproperty(xml_doc,"7008","cbc:Name").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7008","cbc:NameCode").to_s    + colum +
+   
                              itemadditionalproperty(xml_doc,"7008","cbc:Value").to_s    + colum +
 
-                            itemadditionalproperty(xml_doc,"7009","cbc:Name").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7009","cbc:NameCode").to_s    + colum +
+                         
                              itemadditionalproperty(xml_doc,"7009","cbc:Value").to_s    + colum  +
 
-                             itemadditionalproperty(xml_doc,"7011","cbc:Name").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7011","cbc:NameCode").to_s    + colum +
                              itemadditionalproperty(xml_doc,"7011","cbc:Value").to_s    + colum +
 
-                             itemadditionalproperty(xml_doc,"7010","cbc:Name").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7010","cbc:NameCode").to_s    + colum +
                              itemadditionalproperty(xml_doc,"7010","cbc:Value").to_s    + colum +
 
 
