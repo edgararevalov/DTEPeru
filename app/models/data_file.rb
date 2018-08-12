@@ -39,6 +39,7 @@ class DataFile < ActiveRecord::Base
     strparentname = ""
     idline = 1
     blnencontrado = 0
+    totales = "//cac:LegalMonetaryTotal"
 
     colum = "|"
     
@@ -57,6 +58,7 @@ class DataFile < ActiveRecord::Base
        strquantity = "cbc:DebitedQuantity"
        parentline = "DebitNoteLine" 
        strroot = "DebitNote"
+       totales = "//cac:RequestedMonetaryTotal"
     end
 
 #VERSION DEL UBL 
@@ -106,11 +108,12 @@ class DataFile < ActiveRecord::Base
 	    xml_doc.xpath('//cac:AccountingCustomerParty/cbc:AdditionalAccountID' , 'cac' => cac, 'cbc' => cbc).text + colum + #Identificador Receptor
 	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Razon Social Receptor
 	    xml_doc.xpath('//cac:RegistrationAddress/cbc:StreetName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Receptor
-	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Neto
-	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
-	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Descuentos
-	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:ChargeTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Recargos
-	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + #Monto Total
+
+	    xml_doc.xpath(totales + '/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Neto
+	    xml_doc.xpath(totales + '/cbc:TaxExclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
+	    xml_doc.xpath(totales + '/cbc:AllowanceTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Descuentos
+	    xml_doc.xpath(totales + '/cbc:ChargeTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Recargos
+	    xml_doc.xpath(totales + '/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + #Monto Total
 	    ""+colum + # /codigos de otros conceptos tributarios recomendados
 	    ""+colum + # Total de Valor Venta Neto
 	     # numero de documento de identidad del adquirente o usuario  
@@ -199,8 +202,8 @@ class DataFile < ActiveRecord::Base
 
          if blnencontrado == 0 
             strtrama = strtrama +  "|"
-            blnencontrado = 1   
          end 
+            blnencontrado = 0   
 
       strtrama = strtrama +
 
