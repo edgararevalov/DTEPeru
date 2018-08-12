@@ -38,6 +38,7 @@ class DataFile < ActiveRecord::Base
     xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     strparentname = ""
     idline = 1
+    blnencontrado = 0
 
     colum = "|"
     
@@ -189,12 +190,17 @@ class DataFile < ActiveRecord::Base
         xml_doc.xpath("//cbc:Note", 'cbc' => cbc  ).each do |element| 
 
                     if element.parent.name ==strroot 
-
-		           strtrama = strtrama + element.text + "|" 		         
+                          blnencontrado = 1
+                          strtrama = strtrama + element.text + "|" 		         
 		           
                      end
 
 	  end  
+
+         if blnencontrado == 0 
+            strtrama = strtrama +  "|"
+            blnencontrado = 1   
+         end 
 
       strtrama = strtrama +
 
