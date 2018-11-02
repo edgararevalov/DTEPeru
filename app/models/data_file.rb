@@ -543,6 +543,8 @@ class DataFile < ActiveRecord::Base
 
   end
 
+#UBL 2.1
+
    def tramaubl21(xmlfiles,tipocpe)
 	    xml = File.new(xmlfiles)
 
@@ -1061,17 +1063,26 @@ end
 			   #Tipo de Documento (tipo de comprobante que se realizo el anticipo)
                           #xml_doc.xpath('//Invoice/cac:PaymentTerms/cbc:PaymentMeansID  ' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Código del Bien o Servicio Sujeto a Detracción
 			   #Serie y correlativo del emisor del anticipo (tipo de comprobante que se realizo el anticipo)
-                          
-		          element.xpath('cbc:ID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') + "|" + 
-			   #Serie - Correlativo 
-		          element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
-			   #Tipo de Documento de Identidad del Emisor del Anticipo
-		          element.xpath('cbc:InstructionID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') + "|" + 
-			  #Numero de Identidad del Emisor del Anticipo
-		          element.xpath('cbc:InstructionID','cac' => cac,'cbc' => cbc).text + "|" 
 
-		                          
-		           strtrama = strtrama + "<br>"
+                           begin   
+                         
+		             element.xpath('cbc:ID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID') 
+                           rescue 
+                                "" +  "|"  
+                           end
+			   #Serie - Correlativo 
+		           strtrama = strtrama + element.xpath('cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+			   #Tipo de Documento de Identidad del Emisor del Anticipo
+                          begin   
+         		      element.xpath('cbc:InstructionID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID')   
+                          rescue
+                              "ff" + "|"
+                          end
+			  #Numero de Identidad del Emisor del Anticipo
+		          strtrama = strtrama + element.xpath('cbc:InstructionID','cac' => cac,'cbc' => cbc).text + "|"  + "<br>"
+
+		                         
+		          
 		    end  
 
 #CAMPOS PERSONALIZADOS 
