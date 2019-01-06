@@ -557,6 +557,7 @@ class DataFile < ActiveRecord::Base
 	    cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
 	    sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
 	    xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+            ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
 	    strparentname = ""
 	    idline = 1
 
@@ -626,9 +627,9 @@ class DataFile < ActiveRecord::Base
 	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum + #Tipo de identidad del adquiriente o usuario
             # Apellidos y nombres, denominaci'on o raz'on social del adquiriente o usuario
        	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + 
-	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Receptor
+	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine/cbc:Line' , 'cac' => cac, 'cbc' => cbc).text + colum + # Direccion del Receptor
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Neto
-	    xml_doc.xpath('//cac:TaxTotal/cbc:TaxAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
+	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Impuestos
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum + # Monto Descuentos
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:ChargeTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Recargos
 	    xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +  #Monto Total
@@ -665,7 +666,7 @@ class DataFile < ActiveRecord::Base
 
          #FACTURA GUIA
 
-         xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment','cac' => cac).each do |fguia|
+         xml_doc.xpath('//cac:Delivery/cac:Shipment','cac' => cac).each do |fguia|
 
 
 	  strtrama = strtrama + "<br>"
@@ -1076,7 +1077,7 @@ end
                           begin   
          		      element.xpath('cbc:InstructionID [@schemeID]','cac' => cac,'cbc' => cbc).attribute('schemeID')   
                           rescue
-                              "ff" + "|"
+                              "" + "|"
                           end
 			  #Numero de Identidad del Emisor del Anticipo
 		          strtrama = strtrama + element.xpath('cbc:InstructionID','cac' => cac,'cbc' => cbc).text + "|"  + "<br>"
@@ -1087,9 +1088,9 @@ end
 
 #CAMPOS PERSONALIZADOS 
 
-		    xml_doc.xpath("//CustomText/Text").each do |element|
-		           strtrama = strtrama + "<b>PE|</b>" + element.attribute('name') + "|" + element.text + "|" + "<br>"
-		     end
+		    #xml_doc.xpath("//CustomText/Text").each do |element|
+		           strtrama = strtrama + xml_doc.xpath("//CustomText/Text").to_s
+		    # end
 
 		    xml_doc.xpath("//CustomText/Section").each do |section|
 		            strtrama = strtrama + "<b>PES|</b>" + section.attribute('name') + "<br>"
