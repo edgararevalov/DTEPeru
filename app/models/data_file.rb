@@ -855,7 +855,13 @@ end
                      strtrama = strtrama + "<br>"
 
                 #DESCUENTOS Y RECARGOS DEL ITEM DEDR
-		     element.xpath("cac:AllowanceCharge", 'cac' => cac ).each do |itemcharge|
+                        if tipocpe == "07" || tipocpe == "08"
+                            strCargos = "cac:Price/cac:AllowanceCharge"
+                        else  
+                            strCargos = "cac:AllowanceCharge"  
+                        end   
+                          
+		     element.xpath(strCargos, 'cac' => cac ).each do |itemcharge|
 		         strtrama = strtrama + "<b>DEDR|</b>" +
 		         itemcharge.xpath('cbc:ChargeIndicator','cac' => cac,'cbc' => cbc).text + "|" + # Indicador de Tipo
 		         itemcharge.xpath('cbc:Amount','cac' => cac,'cbc' => cbc).text + "|" +   # Monto Descuento o Recargo
@@ -1017,6 +1023,15 @@ end
 		    end  
 
 	     #Descuentos y Recargos Globales   
+
+                      if tipocpe == "07" || tipocpe == "08"
+                             parentline = "Price"
+                       else  
+                             parentline = "InvoiceLine"
+                       end   
+                   
+                   
+
 		    xml_doc.xpath("//cac:AllowanceCharge", 'cac' => cac).each do |element| 
 		           if element.parent.name    != parentline
 
@@ -1046,6 +1061,13 @@ end
 		          end
 		    end  
 
+                     if tipocpe == "07" 
+                             parentline = "CreditNoteLine"
+                     elsif tipocpe == "08"  
+                             parentline = "DebitNoteLine"
+                     end    
+
+                    
 	 #ANTICIPOS Y PREPAGOS   
 		   
 		    xml_doc.xpath("//cac:PrepaidPayment", 'cac' => cac,'cbc' => cbc  ).each do |element| 
