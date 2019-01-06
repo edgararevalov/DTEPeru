@@ -701,51 +701,57 @@ class DataFile < ActiveRecord::Base
        end
         #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Apellidos y nombres o razón social
       
-         strtrama = strtrama + xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment/cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:RegistrationName' ,'cac' => cac, 'cbc' => cbc).text + colum  + 
+         strtrama = strtrama + fguia.xpath('cac:ShipmentStage/cac:CarrierParty/cac:PartyLegalEntity/cbc:RegistrationName' ,'cac' => cac, 'cbc' => cbc).text + colum  + 
          fguia.xpath('cac:ShipmentStage/cbc:TransportModeCode' ,'cac' => cac, 'cbc' =>  cbc).text + colum +   #   Modalidad de Traslado del remitente
          fguia.xpath('cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Código de motivo de traslado
          fguia.xpath('cbc:GrossWeightMeasure' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Peso bruto total de la Factura
          fguia.xpath('cac:Delivery/cac:DeliveryParty/cbc:MarkAttentionIndicator' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   #   Indicador de subcontratación
          fguia.xpath('cac:ShipmentStage/cac:TransitPeriod/cbc:StartDate' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Fecha de inicio del traslado o fecha de entrega de bienes al transportista
-         fguia.xpath('cac:ShipmentStage/cac:CarrierParty/cacPartyLegalEntity/cbc:CompanyID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Registro del MTC
+         fguia.xpath('cac:ShipmentStage/cac:CarrierParty/cac:PartyLegalEntity/cbc:CompanyID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos del Transportista (FG Remitente) o Transportista contratante (FG Transportista) - Registro del MTC
          fguia.xpath('cac:ShipmentStage/cac:DriverPerson/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Datos de conductores - Número de documento de identidad
       #   Datos de conductores - Tipo de documento
       begin
-      fguia.xpath('cac:ShipmentStage/cac:DriverPerson/cbc:ID [@schemeID]' ,'cac' => cac, 'cbc' => cbc).attribute('schemeID').text + colum 
+      fguia.xpath('cac:ShipmentStage/cac:DriverPerson/cbc:ID [@schemeID]' ,'cac' => cac, 'cbc' => cbc).attribute('schemeID').text + colum + 
+      fguia.xpath('cac:TransportHandlingUnit/cac:TransportEquipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum  +
+      fguia.xpath('cbc:GrossWeightMeasure' ,'cac' => cac, 'cbc' =>      cbc).attribute('unitCode').text + colum   #   Unidad de medida de la carga
       rescue
         ""+colum  # /mARCA DEL VEHICULO 
       ensure 
            #   Información de vehículos secundarios
-         strtrama = strtrama +   fguia.xpath('cac:TransportHandlingUnit/cac:TransportEquipment/cbc:ID' ,'cac' => cac, 'cbc' =>      cbc).text + colum  
+            strtrama = strtrama +  colum 
        end
 
 end
      
      #VENTA ITENERANTE
 
- xml_doc.xpath('//Invoice/cac:Delivery/cac:DeliveryLocation','cac' => cac).each do |vite|
+ xml_doc.xpath('//cac:Delivery','cac' => cac).each do |vite|
 
-          strtrama = strtrama + "<br>"
-          strtrama = strtrama +  "<b>VITE|</b>" +
-       # Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de ubigeo - Catálogo No. 13)
-       vite.xpath('cac:Address/cbc:ID ' ,'cac' => cac, 'cbc' =>     cbc).text + colum +  
-        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Dirección completa y detallada) 
-       vite.xpath('cac:Address/cac:AddressLine/cbc:Line ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
-        #   Dirección del lugar en el que se entrega el bien o se presta el servicio(Urbanización)
-        vite.xpath('cac:Address/cbc:CitySubdivisionName ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
-        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Provincia)  
-        vite.xpath('cac:Address/cbc:CityName ' ,'cac' => cac, 'cbc' =>      cbc).text + colum +
-        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Departamento)
-        vite.xpath('cac:Address/cbc:CountrySubentity ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
-        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Distrito) 
-        vite.xpath('cac:Address/cbc:District' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   
-        #   Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de país - Catálogo No. 04)
-       vite.xpath('cac:Address/cac:Country/cbc:IdentificationCode ' ,'cac' => cac, 'cbc' =>      cbc).text + colum   
+     if  vite.parent.name == strroot
+
+		  strtrama = strtrama + "<br>"
+		  strtrama = strtrama +  "<b>VITE|</b>" +
+	       # Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de ubigeo - Catálogo No. 13)
+	       vite.xpath('cac:DeliveryLocation/cac:Address/cbc:ID ' ,'cac' => cac, 'cbc' =>     cbc).text + colum +  
+		#   Dirección del lugar en el que se entrega el bien o se presta el servicio (Dirección completa y detallada) 
+	       vite.xpath('cac:DeliveryLocation/cac:Address/cac:AddressLine/cbc:Line ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+		#   Dirección del lugar en el que se entrega el bien o se presta el servicio(Urbanización)
+		vite.xpath('cac:DeliveryLocation/cac:Address/cbc:CitySubdivisionName ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+		#   Dirección del lugar en el que se entrega el bien o se presta el servicio (Provincia)  
+		vite.xpath('cac:DeliveryLocation/cac:Address/cbc:CityName ' ,'cac' => cac, 'cbc' =>      cbc).text + colum +
+		#   Dirección del lugar en el que se entrega el bien o se presta el servicio (Departamento)
+		vite.xpath('cac:DeliveryLocation/cac:Address/cbc:CountrySubentity ' ,'cac' => cac, 'cbc' =>      cbc).text + colum + 
+		#   Dirección del lugar en el que se entrega el bien o se presta el servicio (Distrito) 
+		vite.xpath('cac:DeliveryLocation/cac:Address/cbc:District' ,'cac' => cac, 'cbc' =>      cbc).text + colum +   
+		#   Dirección del lugar en el que se entrega el bien o se presta el servicio (Código de país - Catálogo No. 04)
+	       vite.xpath('cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode ' ,'cac' => cac, 'cbc' =>      cbc).text + colum  + vite.parent.name
+               
+      end  
 end 
 
     #FACTURA DE EXPORTACION
 
-xml_doc.xpath('//Invoice/cac:Delivery/cac:Shipment','cac' => cac).each do |fexpo|
+xml_doc.xpath('//cac:Delivery/cac:Shipment','cac' => cac).each do |fexpo|
 	  strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>FEX|</b>" +
           fexpo.xpath('cbc:InsuranceValueAmount' ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Valor del seguro
@@ -756,7 +762,9 @@ end
 
     #PERCEPCIONES
 
-xml_doc.xpath('//Invoice/cac:AllowanceCharge','cac' => cac).each do |percep|
+xml_doc.xpath('//cac:AllowanceCharge','cac' => cac).each do |percep|
+
+     if  percep.xpath('cbc:AllowanceChargeReasonCode' ,'cac' => cac, 'cbc' => cbc).text == "51"
 	  strtrama = strtrama + "<br>"
           strtrama = strtrama +  "<b>PERC|</b>" +
    
@@ -766,10 +774,15 @@ xml_doc.xpath('//Invoice/cac:AllowanceCharge','cac' => cac).each do |percep|
            percep.xpath('cbc:MultiplierFactorNumeric'  ,'cac' => cac, 'cbc' => cbc).text + colum +   #   (Factor del cargo/descuento)
            percep.xpath('cbc:Amount'  ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Monto de la Percepcion
          begin
-           percep.xpath('cbc:Amount [@currencyID]' ,'cac' => cac, 'cbc' => cbc).attribute('currencyID').text + colum    #   Moneda
+           percep.xpath('cbc:Amount [@currencyID]' ,'cac' => cac, 'cbc' => cbc).attribute('currencyID').text + colum    #   Moneda +
+           percep.xpath('cbc:BaseAmount'  ,'cac' => cac, 'cbc' => cbc).text + colum +   #   Base Imponible
+           percep.xpath('cbc:BaseAmount'  ,'cac' => cac, 'cbc' => cbc).attribute('currencyID').text + colum   #  Moneda
+
+           
          rescue
              ""+ colum  # /BLANCO
          end 
+       end
 end
 
    #DETRACCIONES
@@ -844,7 +857,11 @@ end
                              strtrama = strtrama +
                              itemadditionalproperty(xml_doc,"7000","cbc:Name").to_s    + colum +
                              itemadditionalproperty(xml_doc,"7000","cbc:NameCode").to_s    + colum +
-                             itemadditionalproperty(xml_doc,"7000","cbc:Value").to_s    
+                             itemadditionalproperty(xml_doc,"7000","cbc:Value").to_s    + colum +
+                             element.xpath("cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode", 'cac' => cac,'cbc' => cbc ).text +  colum + # Codigo Producto
+                             element.xpath("cac:Item/cac:StandardItemIdentification/cbc:ID", 'cac' => cac,'cbc' => cbc ).text +  colum + # Codigo GSI
+                             element.xpath("cac:Item/cac:StandardItemIdentification/cbc:ID", 'cac' => cac,'cbc' => cbc ).attribute('schemeID') + "|"  # GTIN
+                             
                           else
                              strtrama = strtrama + colum + colum + colum
                           end
