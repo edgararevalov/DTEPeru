@@ -43,7 +43,7 @@ class DataFile < ActiveRecord::Base
 
     colum = "|"
     
-    if tipocpe == "01" || tipocpe == "03"
+    if tipocpe == "01" || tipocpe == "03" || tipocpe == "14"
        strcpe = "//cac:InvoiceLine"
        strquantity = "cbc:InvoicedQuantity"
        parentline = "InvoiceLine"    
@@ -563,7 +563,7 @@ class DataFile < ActiveRecord::Base
 
 	    colum = "|"
 	    
-	    if tipocpe == "01" || tipocpe == "03"
+	    if tipocpe == "01" || tipocpe == "03" || tipocpe == "14"
 	       strcpe = "//cac:InvoiceLine"
 	       strquantity = "cbc:InvoicedQuantity"
 	       parentline = "InvoiceLine"    
@@ -580,9 +580,241 @@ class DataFile < ActiveRecord::Base
 	       strroot = "DebitNote"
             end
 	
+           
+
+           if tipocpe == "14" 
+
+		   strtrama =  "<b>UBLVERSION|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum   #UBL VERSION
+		   strtrama = strtrama + "<b>CustomizationID|</b>" + xml_doc.xpath('//cbc:CustomizationID', 'cbc' => cbc).text  #CustomizationID 
+		   strtrama = strtrama + "<br>"
+
+
+		   #Encabezado
+		    strtrama = strtrama +  "<b>EN|</b>" + tipocpe.to_s + "|"   #Tipo de Documento
+		   #Serie y Correlativo  
+		   xml_doc.xpath('//cbc:ID','cbc' => cbc).each do |element|
+			   if element.parent.name ==strroot 
+			       strtrama = strtrama + element.text + "|" 
+			   end
+		    end
+
+		   #Fecha de Emision
+		     xml_doc.xpath('//cbc:IssueDate','cbc' => cbc).each do |element|
+			   if element.parent.name ==strroot 
+			       strtrama = strtrama + element.text + "|" 
+			   end
+		    end
+
+                    strtrama = strtrama +
+		    xml_doc.xpath("//cbc:IssueTime",'cbc' => cbc ).text + colum +  #Hora de Emision
+
+		    xml_doc.xpath("//cac:InvoicePeriod/cbc:StartDate",'cac' => cac,'cbc' => cbc ).text + colum +  #cICLO DE FACTURACION iNICIO
+                    xml_doc.xpath("//cac:InvoicePeriod/cbc:EndDate",'cac' => cac,'cbc' => cbc ).text + colum +  #cICLO DE FACTURACION FIN
+                    xml_doc.xpath('//cbc:DocumentCurrencyCode' , 'cbc' => cbc).text + colum + # Tipo de Moneda
+                    xml_doc.xpath("//cac:Invoice/cbc:DueDate",'cac' => cac,'cbc' => cbc ).text + colum +  #Fecha de Vencimiento de la Factura
+
+   #DATOS DEL EMISOR 
+
+    #Identificador    Emisor
+           xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum + #   
+    #RUC Emisor
+           xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID' ,'cac' => cac, 'cbc' => cbc).text + colum + 
+    # Apellidos y nombres, denominacion o razon social	 
+           xml_doc.xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' ,'cac' => cac, 'cbc' => cbc).text + colum +
+              
+	#DATOS DEL RECEPTOR 	   
+            # Numero de documento de identidad del adquiriente o usuario
+            xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum + 
+            #Tipo de identidad del adquiriente o usuario
+	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum +
+            # Apellidos y nombres, denominaci'on o raz'on social del adquiriente o usuario
+       	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName' , 'cac' => cac, 'cbc' => cbc).text + colum + 
+            #cODIGO DE DISTRITO UBIGEO 
+	    xml_doc.xpath('//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:District' , 'cac' => cac, 'cbc' => cbc).text + colum +
+
+#OTROS DATOS DEL RECEPTOR 
+
+#Tipo de Servicio Público
+xml_doc.xpath('//cac:ContractDocumentReference/cbc:DocumentTypeCode' , 'cac' => cac, 'cbc' => cbc).text + colum +
+
+#Código de Servicios de Telecomunicaciones (De corresponder)
+xml_doc.xpath('//cac:ContractDocumentReference/cbc:LocaleCode' , 'cac' => cac, 'cbc' => cbc).text + colum +
+
+#Número de suministro
+xml_doc.xpath('//cac:ContractDocumentReference/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Número de teléfono
+xml_doc.xpath('//cac:ContractDocumentReference/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Código de Tipo de Tarifa contratada
+xml_doc.xpath('//cac:ContractDocumentReference/cbc:DocumentStatusCode' , 'cac' => cac, 'cbc' => cbc).text + colum 
+
+#DELIVERY
+
+delivery = "1"
+
+     begin
+         #validar lo de la clase nill
+       delivery = xml_doc.xpath('//cac:Delivery/cbc:MaximumQuantity' , 'cac' => cac, 'cbc' => cbc).text
+       rescue
+        delivery ="0"          
+       end
+
+if delivery == "" 
+
+   strtrama = strtrama + "|||||||"
+else 
+
+strtrama = strtrama + 
+   #Potencia contratada en Kw (Unidad de medida)
+ xml_doc.xpath('//cac:Delivery/cbc:MaximumQuantity [@unitCode]' , 'cac' => cac, 'cbc' => cbc).attribute('unitCode') + colum +
+   #Potencia contratada en Kw (Potencia contrada)
+xml_doc.xpath('//cac:Delivery/cbc:MaximumQuantity' , 'cac' => cac, 'cbc' => cbc).text + colum +
+   #Tipo de medidor (trifásico, monofásico)
+xml_doc.xpath('//cac:Delivery/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum +
+   #Número de medidor
+xml_doc.xpath('//cac:Delivery/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum +
+   #Ubicación espacial del medidor (coordenadas georeferenciales), cuando tenga el equipo para ello
+xml_doc.xpath('//cac:Delivery/cac:DeliveryLocation/cac:LocationCoordinate' , 'cac' => cac, 'cbc' => cbc).text + colum +
+   #Consumo del periodo (Unidad de medida)
+xml_doc.xpath('//cac:Delivery/cbc:Quantity [@unitCode]' , 'cac' => cac, 'cbc' => cbc).attribute('unitCode') + colum +
+   #Consumo del periodo
+xml_doc.xpath('//cac:Delivery/cbc:Quantity' , 'cac' => cac, 'cbc' => cbc).text + colum 
+end 
+
+#Totales del Recibo
+
+strtrama = strtrama + 
+#Monto total de impuestos
+xml_doc.xpath('//cac:TaxTotal/cbc:TaxAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Total de valor de venta
+xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Total de precio de venta
+xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Total descuentos
+xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Total cargos
+xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:ChargeTotalAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
+#Importe total de la venta,
+xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:PayableAmount' , 'cac' => cac, 'cbc' => cbc).text + colum 
+
+ #ENCABEZADO EXTENSION
+	  strtrama = strtrama + "<br>"
+          strtrama = strtrama +  "<b>ENEX|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum    #Version del UBL
+
+#DETALLES DEL ITEM DE
+		xml_doc.xpath(strcpe, 'cac' => cac  ).each do |element|
+		    strtrama = strtrama + "<br><b>DE|</b>" +
+		    element.xpath('cbc:ID','cbc' => cbc).text + "|" + # Correlativo de la Linea o Detalle
+                    element.xpath( strquantity +'[@unitCode]','cbc' => cbc).attribute('unitCode') + "|"  + # Unidad de medida
+                    element.xpath(strquantity,'cbc' => cbc).text + "|" + # Cantidad de Unidades Vendidas
+                    element.xpath('cac:Price/cbc:PriceAmount','cac' => cac,'cbc' => cbc).text + "|" + # Valor de venta unitario x item
+                    # Tipo de precio de venta
+		    element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceTypeCode', 'cac' => cac,'cbc' => cbc).text + "|" + 
+		    # Precio de Venta Unitario x item
+		    element.xpath('cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceAmount', 'cac' => cac,'cbc' => cbc).text + "|" +                     
+		    element.xpath('cbc:LineExtensionAmount','cbc' => cbc).text + "|"  # Valor de venta por ITEM
+
+                      element.xpath("cac:Item/cbc:Description", 'cac' => cac,'cbc' => cbc ).each do |item|
+		          strtrama = strtrama + "<br>" + "<b>DEDI|</b>" +
+                         # item.xpath('cbc:Description','cbc' => cbc).text + "|" + 
+                          item.text +  "|"  
+                      end
+
+               #IMPUESTOS DEL ITEM DEIM 
+			element.xpath("cac:TaxTotal", 'cac' => cac  ).each do |itemtax|
+                          itemtax.xpath('cac:TaxSubtotal', 'cac' => cac  ).each do |itemtaxsubt|
+
+			    strtrama = strtrama + "<br>" + "<b>DEIM|</b>" +
+			    itemtax.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + # Importe total de un tributo para este item
+			    # Base Imponible (IGV, IVAP, Otros = Q x VU - Descuentos + ISC  ) 
+			    itemtaxsubt.xpath('cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
+			    # Importe explÌcito a tributar ( = Tasa Porcentaje * Base Imponible)                          			    
+                            itemtaxsubt.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" + 
+			    itemtaxsubt.xpath('cac:TaxCategory/cbc:Percent','cac' => cac,'cbc' => cbc).text + "|" + # Tasa Impuesto
+			    # AfectaciÛn del IGV
+			    itemtaxsubt.xpath('cac:TaxCategory/cbc:TaxExemptionReasonCode','cac' => cac,'cbc' => cbc).text + "|" + 
+                       # IdentificaciÛn del tributo
+			    itemtaxsubt.xpath('cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" +
+                      # Nombre del Tributo
+			    itemtaxsubt.xpath('cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" +
+
+                           # CÛdigo del Tipo de Tributos
+			    itemtaxsubt.xpath('cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+			    
+			    strtrama = strtrama 
+                          end         
+
+			end
+
+                         	   
+                    
+		    strtrama = strtrama 
+                 end
+
+ #IMPUESTOS GLOBALES
+		    xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+
+		       if element.parent.name != parentline
+                           
+       	                  
+                          element.xpath('cac:TaxSubtotal','cac' => cac).each do |subtotal|
+
+
+                              #   if subtotal.parent.name ==strroot 
+
+				               strtrama = strtrama +  "<br>" + "<b>DI|</b>" +
+					        # Monto Base            
+					    subtotal.xpath('cbc:TaxableAmount','cac' => cac,'cbc' => cbc).text + "|" +
+
+                                            subtotal.xpath('cbc:TaxableAmount [@currencyID]' , 'cbc' => cbc).attribute('currencyID') + "|" + # Tipo de Moneda
+
+				                # Sumatoria por Tributo (IGV,ISC, Otros)
+					      subtotal.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|" +
+						# Identificación del tributo
+					      subtotal.xpath('cac:TaxCategory/cac:TaxScheme/cbc:ID','cac' => cac,'cbc' => cbc).text + "|" + 
+					       # Nombre del Tributo
+					     subtotal.xpath('cac:TaxCategory/cac:TaxScheme/cbc:Name','cac' => cac,'cbc' => cbc).text + "|" + 
+					       # Código del Tipo de Tributov            
+					    subtotal.xpath('cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode','cac' => cac,'cbc' => cbc).text + "|" 
+					     
+
+				              strtrama = strtrama 
+                              # end                              
+                          end 
+                 
+
+		        
+		       end
+		    end
+
+#CAMPOS PERSONALIZADOS 
+
+		    xml_doc.xpath("//CustomText/Text").each do |element|
+		           strtrama = strtrama + "<br>" +"<b>PE|</b>" + element.attribute('name') + "|" + element.text + "|"  
+		     end
+
+		    xml_doc.xpath("//CustomText/Section").each do |section|
+		            strtrama = strtrama +"<br>" + "<b>PES|</b>" + section.attribute('name') + "<br>"
+		             section.xpath('Detail').each do  |detail|
+		                strtrama = strtrama + "<b>PESD|</b>" + detail.xpath('Value')[0].text  + "|" + detail.xpath('Value')[1].text + "<br>"
+		             end 
+		     end
+
+
+
+		    #  strtrama = "SOY UN RECIBO"
+
+                    return strtrama   
+           end     
+
+
+
+
+#OTROS DOCUMENTOS    
+
            strtrama =  "<b>UBLVERSION|</b>" + xml_doc.xpath('//cbc:UBLVersionID', 'cbc' => cbc).text + colum   #UBL VERSION
 	   strtrama = strtrama + "<b>CustomizationID|</b>" + xml_doc.xpath('//cbc:CustomizationID', 'cbc' => cbc).text  #CustomizationID 
-	   strtrama = strtrama + "<br>"
+           strtrama = strtrama + "<br>"
+
 
 	   #Encabezado
 	    strtrama = strtrama +  "<b>EN|</b>" + tipocpe.to_s + "|"   #Tipo de Documento
@@ -782,6 +1014,8 @@ xml_doc.xpath('//cac:AllowanceCharge','cac' => cac).each do |percep|
          rescue
              ""+ colum  # /BLANCO
          end 
+     
+         strtrama = strtrama  
        end
 end
 
@@ -1138,8 +1372,7 @@ end
 		             end 
 		     end
 
-
-	
+  	
  
         return strtrama
          
@@ -1157,6 +1390,8 @@ end
               end    
 
       end
+
+
          return valor
 
     end
