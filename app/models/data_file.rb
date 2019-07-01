@@ -682,9 +682,17 @@ end
 
 #Totales del Recibo
 
-strtrama = strtrama + 
+ 
 #Monto total de impuestos
-xml_doc.xpath('//cac:TaxTotal/cbc:TaxAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
+
+ xml_doc.xpath("//cac:TaxTotal", 'cac' => cac,'cbc' => cbc  ).each do |element|
+	       if element.parent.name != parentline
+                 strtrama = strtrama +
+	         element.xpath('cbc:TaxAmount','cac' => cac,'cbc' => cbc).text + "|"  # Sumatoria Tributo (IGV+ISC+ Otros)
+	       end
+	    end
+
+strtrama = strtrama +
 #Total de valor de venta
 xml_doc.xpath('//cac:LegalMonetaryTotal/cbc:LineExtensionAmount' , 'cac' => cac, 'cbc' => cbc).text + colum +
 #Total de precio de venta
