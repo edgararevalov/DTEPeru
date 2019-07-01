@@ -634,6 +634,8 @@ class DataFile < ActiveRecord::Base
 
 #OTROS DATOS DEL RECEPTOR 
 
+ "4" + colum + "2" + colum + "993494947" + colum + "993494947" + colum + ""
+=begin
 #Tipo de Servicio Público
 xml_doc.xpath('//cac:ContractDocumentReference/cbc:DocumentTypeCode' , 'cac' => cac, 'cbc' => cbc).text + colum +
 
@@ -647,6 +649,7 @@ xml_doc.xpath('//cac:ContractDocumentReference/cbc:ID' , 'cac' => cac, 'cbc' => 
 #Código de Tipo de Tarifa contratada
 xml_doc.xpath('//cac:ContractDocumentReference/cbc:DocumentStatusCode' , 'cac' => cac, 'cbc' => cbc).text + colum 
 
+=end
 #DELIVERY
 
 delivery = "1"
