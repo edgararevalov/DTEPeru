@@ -663,15 +663,17 @@ if delivery == ""
    strtrama = strtrama + "|||||||"
 else 
 
+
 strtrama = strtrama + 
    #Potencia contratada en Kw (Unidad de medida)
  xml_doc.xpath('//cac:Delivery/cbc:MaximumQuantity [@unitCode]' , 'cac' => cac, 'cbc' => cbc).attribute('unitCode') + colum +
    #Potencia contratada en Kw (Potencia contrada)
 xml_doc.xpath('//cac:Delivery/cbc:MaximumQuantity' , 'cac' => cac, 'cbc' => cbc).text + colum +
    #Tipo de medidor (trifásico, monofásico)
-xml_doc.xpath('//cac:Delivery/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum +
+xml_doc.xpath('//cac:Delivery/cbc:ID [@schemeID]' , 'cac' => cac, 'cbc' => cbc).attribute('schemeID') + colum + "123456" +
    #Número de medidor
-xml_doc.xpath('//cac:Delivery/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum +
+  colum + 
+#xml_doc.xpath('//cac:Delivery/cbc:ID' , 'cac' => cac, 'cbc' => cbc).text + colum +
    #Ubicación espacial del medidor (coordenadas georeferenciales), cuando tenga el equipo para ello
 xml_doc.xpath('//cac:Delivery/cac:DeliveryLocation/cac:LocationCoordinate' , 'cac' => cac, 'cbc' => cbc).text + colum +
    #Consumo del periodo (Unidad de medida)
