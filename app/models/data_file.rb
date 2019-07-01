@@ -611,7 +611,7 @@ class DataFile < ActiveRecord::Base
 		    xml_doc.xpath("//cac:InvoicePeriod/cbc:StartDate",'cac' => cac,'cbc' => cbc ).text + colum +  #cICLO DE FACTURACION iNICIO
                     xml_doc.xpath("//cac:InvoicePeriod/cbc:EndDate",'cac' => cac,'cbc' => cbc ).text + colum +  #cICLO DE FACTURACION FIN
                     xml_doc.xpath('//cbc:DocumentCurrencyCode' , 'cbc' => cbc).text + colum + # Tipo de Moneda
-                    xml_doc.xpath("//cac:Invoice/cbc:DueDate",'cac' => cac,'cbc' => cbc ).text + colum +  #Fecha de Vencimiento de la Factura
+                    xml_doc.xpath("//cbc:DueDate",'cac' => cac,'cbc' => cbc ).text + colum +  #Fecha de Vencimiento de la Factura
 
    #DATOS DEL EMISOR 
 
@@ -634,7 +634,7 @@ class DataFile < ActiveRecord::Base
 
 #OTROS DATOS DEL RECEPTOR 
 
- "4" + colum + "2" + colum + "993494947" + colum + "993494947" + colum + ""
+ "4" + colum + "2" + colum + "993494947" + colum + "993494947" + colum + "L001"
 =begin
 #Tipo de Servicio Público
 xml_doc.xpath('//cac:ContractDocumentReference/cbc:DocumentTypeCode' , 'cac' => cac, 'cbc' => cbc).text + colum +
