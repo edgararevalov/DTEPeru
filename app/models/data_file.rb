@@ -1108,8 +1108,11 @@ end
                              itemadditionalproperty(xml_doc,"7000","cbc:Value").to_s    + colum +
                              element.xpath("cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode", 'cac' => cac,'cbc' => cbc ).text +  colum + # Codigo Producto
                              element.xpath("cac:Item/cac:StandardItemIdentification/cbc:ID", 'cac' => cac,'cbc' => cbc ).text +  colum + # Codigo GSI
+                             begin
                              element.xpath("cac:Item/cac:StandardItemIdentification/cbc:ID", 'cac' => cac,'cbc' => cbc ).attribute('schemeID') + "|"  # GTIN
-                             
+                             rescue
+                                 ""+ colum  # /BLANCO  
+                             end 
                           else
                              strtrama = strtrama + colum + colum + colum
                           end
